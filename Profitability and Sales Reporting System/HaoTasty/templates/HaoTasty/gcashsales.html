@@ -1,0 +1,175 @@
+{% extends "employeebase.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col d-flex justify-content-between align-items-center">
+            <h1 class="display-4 fw-bold">Input GCash Sales</h1>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <form method="post" action="#">
+                {% csrf_token %}
+
+                <div class="main-container">
+                    <div class="amount-container mb-4">
+                        <div class="amount-display">
+                            <h5 class="text-center mb-2">Total Amount:</h5>
+                            <h2 class="display-3 text-center fw-bold mb-0">
+                                PHP {{ total_amount|default:"0" }}  <!-- to edit -->
+                            </h2>
+                            <input type="hidden" name="total_amount" value="{{ total_amount|default:'0' }}">
+                        </div>
+                    </div>
+
+                    <div class="keypad-container mb-4">
+                        <div class="keypad">
+                            <button type="submit" name="digit" value="1" class="btn keypad-btn number-btn">1</button>
+                            <button type="submit" name="digit" value="2" class="btn keypad-btn number-btn">2</button>
+                            <button type="submit" name="digit" value="3" class="btn keypad-btn number-btn">3</button>
+                            <button type="submit" name="digit" value="4" class="btn keypad-btn number-btn">4</button>
+                            <button type="submit" name="digit" value="5" class="btn keypad-btn number-btn">5</button>
+                            <button type="submit" name="digit" value="6" class="btn keypad-btn number-btn">6</button>
+                            <button type="submit" name="digit" value="7" class="btn keypad-btn number-btn">7</button>
+                            <button type="submit" name="digit" value="8" class="btn keypad-btn number-btn">8</button>
+                            <button type="submit" name="digit" value="9" class="btn keypad-btn number-btn">9</button>
+                            <button type="submit" name="action" value="clear" class="btn keypad-btn clear-btn">
+                                <i class="fas fa-backspace"></i>
+                            </button>
+                            <button type="submit" name="digit" value="0" class="btn keypad-btn number-btn">0</button>
+                            <button type="submit" name="action" value="enter" class="btn keypad-btn enter-btn">
+                                ENTER
+                            </button>
+                        </div>
+                    </div>
+                    <a href="{% url 'order_input' %}" class="btn btn-custom">BACK</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f5f5f5;
+    }
+
+    .main-container {
+        background-color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .amount-container {
+        background-color: white;
+        border-radius: 20px;
+        padding: 1rem;
+        width: 80%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .amount-display {
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        width: 100%;
+    }
+
+    .keypad-container {
+        background-color: white;
+        border-radius: 20px;
+        padding: 1rem;
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .keypad-btn {
+        aspect-ratio: 2/1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 600;
+        border-radius: 15px;
+        padding: 0;
+        border: none;
+        transition: transform 0.1s;
+    }
+
+    .keypad-btn:active {
+        transform: scale(0.95);
+    }
+    
+    .number-btn {
+        background-color: #f0f0f0;
+        color: #000;
+    }
+
+    .number-btn:hover {
+        background-color: #e0e0e0;
+    }
+    
+    .clear-btn {
+        background-color: #A31D1D;
+        color: white;
+    }
+
+    .clear-btn:hover {
+        background-color: #8a1818;
+        color: white;
+    }
+    
+    .enter-btn {
+        background-color: #3B8F5D;
+        color: white;
+    }
+
+    .enter-btn:hover {
+        background-color: #327a4f;
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        border-width: 1px;
+        background-color: #333;
+    }
+
+    .btn-custom {
+        background: #f0f0f0;
+        color: #333;
+        border: none;
+    }
+
+    .btn-custom:hover {
+        background-color: #acacac; 
+    }
+
+    @media (max-width: 768px) {
+        .amount-container,
+        .keypad-container {
+            width: 100%;
+        }
+
+        .keypad-btn {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}

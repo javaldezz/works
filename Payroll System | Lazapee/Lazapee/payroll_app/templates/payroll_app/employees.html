@@ -1,0 +1,79 @@
+{% extends 'payroll_app/base.html' %} <!--extends base.html-->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} View Employees {% endblock %}
+
+<!-- TABLE --> 
+<!--Should list All Employees-->
+
+{% block content %}
+
+{% if messages %}
+<div class="alert alert-primary" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container">
+    <div class="row">
+        <div class="form-header col-md-9">
+            <h3><b>Employees</b></h3> 
+        </div>
+        <div class="form-header text-end col-md-3">
+            <a href="/create_employee" class="btn btn-pink">+ New Employee</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">    
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped p-1">
+                <thead>
+                    <tr>
+                        <th class="table-dark" scope="col"> Name </th>
+                        <th class="table-dark" scope="col"> ID Number </th>
+                        <th class="table-dark" scope="col"> Rate </th>
+                        <th class="table-dark" scope="col"> Allowance </th>
+                        <th class="table-dark" scope="col"> Overtime Pay </th>
+                        <th class="table-dark" scope="col"> Overtime </th>    
+                        <th class="table-dark" scope="col"> Edit Employee </th>   
+ 
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in employees_objects %}
+                        <tr>
+                            <td> {{ d.name }} </td>
+                            <td> {{ d.id_number }} </td>
+                            <td> {{ d.rate }} </td>
+                            <td> {{ d.allowance }} </td>
+                            <td> {{ d.overtime_pay }} </td>
+                            <td>
+                                <form method="POST" action="{% url 'update_overtime' d.id_number %}">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-3">
+                                        <input type="text" class="form-control" id="add_overtime_{{ d.id_number }}" name="add_overtime" placeholder="Overtime Hours" style="width: 150px;">
+                                        <button type="submit" class="btn btn-success">Add Overtime</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td>
+                                <a href="view_employee/{{d.id_number}}" class="btn btn-secondary">View</a>
+                                <a href="update_employee/{{ d.id_number }}" class="btn btn-primary">Update</a>
+                                <a href="delete_employee/{{ d.id_number }}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+</div>
+
+{% endblock %} 

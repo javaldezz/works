@@ -1,0 +1,149 @@
+{% extends 'payroll_app/base.html' %} <!--extends base.html-->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} View Payslip {% endblock %}
+
+<!-- TABLE --> 
+<!-- Should show a Payslip -->
+
+{% block content %}
+<div class="container">
+    <div class="row p-2">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h4 class="card-title m-3 text-center"><strong> Employee Information </strong></h4>
+                        </div>
+        
+                        <div class="card-body" style="background-color:#fac4de ;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="card-text">Name:</p>
+                                    <p class="card-text">ID Number:</p>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <p class="card-text">{{ payslip.id_number.name }}</p>
+                                    <p class="card-text">{{ payslip.id_number.id_number }}</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="card-text">Date:</p>
+                                    <p class="card-text">Cycle:</p>
+                                    <p class="card-text">Payslip ID:</p>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <p class="card-text">{{ payslip.month }} {{ payslip.date_range }}, {{ payslip.year }}</p>
+                                    <p class="card-text">{{ payslip.pay_cycle }}</p>
+                                    <p class="card-text">{{ payslip.pk }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="container-fluid text-center">
+                    <a href="{% url 'payslip' %}" class ="btn btn-primary p-3" style="text-align: center;"> Back to Payslip List</a> <br> <br>
+                    <a href="{% url 'delete_payslip' payslip.pk %}" class ="btn btn-danger p-3" style="text-align: center;"> Delete Payslip</a> <br> <br>
+                    <a href="{% url 'view_employee' payslip.id_number.id_number %}" class ="btn btn-secondary p-3" style="text-align: center;"> View Employee</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h4 class="card-title">Earnings</h4>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>Base Pay</td>
+                                        <td class="text-end">{{ payslip.rate }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Allowances</td>
+                                        <td class="text-end">{{ payslip.earnings_allowance }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Overtime</td>
+                                        <td class="text-end">{{ payslip.overtime }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><strong>Gross Pay</strong></td>
+                                        <td class="text-end" style="font-size: larger;"><strong>{{ payslip.total_earnings }}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h4 class="card-title">Deductions</h4>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>Withholding Tax</td>
+                                        <td class="text-end">{{ payslip.deductions_tax }}</td>
+                                    </tr>
+
+                                    {% if payslip.pay_cycle == 2 %}
+                                    <tr>
+                                        <td>Philhealth</td>
+                                        <td class="text-end">{{ payslip.deductions_health }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SSS</td>
+                                        <td class="text-end">{{ payslip.sss }}</td>
+                                    </tr>
+                                    {% endif %}
+
+                                    {% if payslip.pay_cycle == 1 %}
+                                    <tr>
+                                        <td>Pag-ibig</td>
+                                        <td class="text-end">{{ payslip.pag_ibig }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td><strong>Total Deductions</strong></td>
+                                        <td class="text-end" style="font-size: larger;"><strong>{{ payslip.total_deductions }}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h4 class="card-title">Net Pay</h4>
+                            <h4 class="card-text text-end"><strong>{{ payslip.total_pay }} </strong></h4>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+                
+</div>
+
+{% endblock %}

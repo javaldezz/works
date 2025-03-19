@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Customize Menu{% endblock %}
+{% block content %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        display: flex;
+        background-color: #f4f4f4;
+    }
+
+    .dashboard {
+        display: flex;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        background-color: #fff;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background-color: #fff;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .action-button {
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #6c757d; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .action-button:hover {
+        background-color: #5a6268; 
+    }
+
+    .table-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+    }
+
+    .table-container th, .table-container td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .table-container th {
+        background-color: #f8f8f8;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .table-container tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .availability-dropdown {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    .delete-btn {
+        padding: 8px 12px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+
+    
+</style>
+
+<body>
+    <div class="dashboard">
+        <div class="main-content">
+            <div class="header">
+                <h1>Customize Menu</h1>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'add_menu' %}" class="action-button">Add New Item</a>
+                <a href="{% url 'update_menu' %}" class="action-button">Update Menu</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Menu Item</th>
+                            <th>Menu Item Price</th>
+                            <th>Item Availability Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in menu_items %}
+                            <tr>
+                                <td>{{ item.menu_item_name }}</td>
+                                <td>{{ item.menu_item_price }}</td>
+                                {% if item.item_availability_status == 1 %}
+                                <td>For Sale</td>
+                                {% elif item.item_availability_status == 0 %}
+                                <td>Discontinued</td>                                
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+{% endblock %}

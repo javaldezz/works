@@ -1,0 +1,103 @@
+{% extends 'payroll_app/base.html' %} <!--extends base.html-->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} View d {% endblock %}
+
+<!-- TABLE --> 
+<!-- Should show a d -->
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 container-fluid">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4 class="card-title m-3 text-center"><strong> Employee Information </strong></h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 container-fluid">
+                            <p class="card-text">Name:</p>
+                            <p class="card-text">ID Number:</p>
+                        </div>
+                        <div class="col-md-6 container-fluid text-end">
+                            <p class="card-text">{{ d.name }}</p>
+                            <p class="card-text">{{ d.id_number }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6 container-fluid">
+                            <p class="card-text">Rate:</p>
+                            <p class="card-text">Overtime Hours:</p>
+                            <p class="card-text">Overtime Pay:</p>
+                        </div>
+                        <div class="col-md-6 container-fluid text-end">
+                            <p class="card-text">{{ d.rate }}</p>
+                            <p class="card-text">{{ d.overtime_hours }}</p>
+                            <p class="card-text">{{ d.overtime_pay }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+
+        <div class="col-md-10">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4 class="card-title m-3 text-center"><strong> Related Payslips </strong></h4>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-striped p-2">
+                        <thead>
+                            <tr>
+                                <th class="table-dark" scope="col"> ID Number </th>
+                                <th class="table-dark" scope="col"> Date </th>
+                                <th class="table-dark" scope="col"> Cycle </th>
+                                <th class="table-dark" scope="col"> Total Pay </th>
+                                <th class="table-dark" scope="col"> Options </th>    
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                        {% if payslip_objects %}
+                            {% for d in payslip_objects %}
+                            <tr>
+                                <td> {{ d.id_number.id_number }} </td>
+                                <td> {{ d.month }} {{d.date_range}} {{d.year}} </td>
+                                <td> {{ d.pay_cycle }} </td>
+                                <td> {{ d.total_pay }} </td>
+                                <td><a href="{% url 'view_payslip' d.pk %}" class ="btn btn-secondary"> View</a></td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" style="text-align: center;">There are no payslips available for this employee.</td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" style="text-align: center;"><a href="{% url 'payslip' %}" class ="btn btn-secondary"> Create a Payslip</a></td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-center">
+        <div class="text-center">
+            <a href="{% url 'employees' %}" class ="btn btn-primary" style="text-align: center;"> Back to Employee List</a></td>
+        </div>
+    </div>
+    <br>
+    <br>
+{% endblock %}

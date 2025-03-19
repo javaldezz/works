@@ -1,0 +1,282 @@
+{% extends "employeebase.html" %}
+{% block title %}Input Cash Sales{% endblock %}
+
+{% block content %}
+<div class="cash-input-container">
+    <div class="header-section">
+        <h1>Input Cash Sales</h1>
+    </div>
+
+    <div class="cash-input-grid">
+        <div class="totals-section">
+            <div class="total-card">
+                {% if order %}
+                <h2>Total Bill:</h2>
+                <div class="grand-total" id="totalBill">
+                        ₱{{ grand_total }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="total-card">
+                <h2>Customer Bills:</h2>
+                <div class="amount" id="customerBills">PHP 0
+                    {{customerBills}}
+                </div>
+            </div>
+            
+            <div class="total-card">
+                <h2>Customer Change:</h2>
+                <div class="amount" id="customerChange">
+                    {{ customerChange }}
+                </div>
+            </div>
+
+            <a href="#" class="btn btn-success">ENTER</a>
+            <a href="{% url 'order_input' %}" class="btn btn-secondary">BACK</a>
+            
+        </div>
+
+        <div class="denominations-grid">
+            <div class="grid-header">
+                <div>Qty</div>
+                <div>Cash Value</div>
+            </div>
+            <div id="denominationRows"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cash-input-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .header-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .cash-input-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 30px;
+    }
+
+    .totals-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .total-card {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .total-card h2 {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .total-card .amount {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .total-card .grand-total {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .denominations-grid {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .grid-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 10px 20px;
+        font-weight: 600;
+        color: #666;
+    }
+
+    .denomination-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 10px 20px;
+        align-items: center;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .qty-adjust {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        background: #f0f0f0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: #666;
+    }
+
+    .qty-adjust.minus {
+        color: #dc3545;
+    }
+
+    .qty-adjust.plus {
+        color: #28a745;
+    }
+
+    .qty-adjust:hover {
+        background: #e0e0e0;
+    }
+
+    .qty-input {
+        width: 60px;
+        text-align: center;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        background: #f8f9fa;
+    }
+
+    .cash-value {
+        font-size: 1rem;
+        color: #333;
+        background: #f8f9fa;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    .btn {
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    @media (max-width: 768px) {
+        .cash-input-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header-section h1 {
+            font-size: 2rem;
+        }
+
+        .total-card .amount {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    const denominations = [
+        1000, 500, 200, 100, 50, 20, 10, 5, 1, 0.50, 0.25, 0.10, 0.05, 0.01
+    ];
+
+    // let totalBill = item.querySelector(".grand-total").value;
+    // let customerBills = 0;
+
+    function createDenominationRows() {
+        const container = document.getElementById('denominationRows');
+        denominations.forEach(value => {
+            const row = document.createElement('div');
+            row.className = 'denomination-row';
+            row.innerHTML = `
+                <div class="quantity-control">
+                    <button class="qty-adjust minus" onclick="adjustQuantity('${value}', -1)">−</button>
+                    <input type="number" value="0" class="qty-input" min="0" 
+                           onchange="handleInputChange('${value}', this.value)"
+                           data-denomination="${value}">
+                    <button class="qty-adjust plus" onclick="adjustQuantity('${value}', 1)">+</button>
+                </div>
+                <div class="cash-value">${value.toFixed(2)}</div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function adjustQuantity(denomination, change) {
+        const input = document.querySelector(`input[data-denomination="${denomination}"]`);
+        let newValue = parseInt(input.value || 0) + change;
+        if (newValue < 0) newValue = 0;
+        input.value = newValue;
+        updateTotals();
+    }
+
+    function handleInputChange(denomination, value) {
+        const input = document.querySelector(`input[data-denomination="${denomination}"]`);
+        let newValue = parseInt(value || 0);
+        if (newValue < 0) newValue = 0;
+        input.value = newValue;
+        updateTotals();
+    }
+
+    function updateTotals() {
+        customerBills = 0;
+        const inputs = document.querySelectorAll('.qty-input');
+        inputs.forEach(input => {
+            const denomination = parseFloat(input.dataset.denomination);
+            const quantity = parseInt(input.value || 0);
+            customerBills += denomination * quantity;
+        });
+
+        totalBill = item.querySelector(".grand-total").value; // to be edited - sample bill only - we need a variable to store value of total
+
+        const change = customerBills - totalBill;
+
+        // document.getElementById('totalBill').textContent = `PHP ${totalBill.toFixed(2)}`;
+        document.getElementById('customerBills').textContent = `PHP ${customerBills.toFixed(2)}`;
+        document.getElementById('customerChange').textContent = `PHP ${change.toFixed(2)}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        createDenominationRows();
+        updateTotals();
+    });
+</script>
+{% endblock %}

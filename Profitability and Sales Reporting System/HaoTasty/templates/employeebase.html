@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{% block title %}{% endblock %}</title>
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+   {% block scripts %}
+   <script>
+            function updateQuantity(button, change) {
+                let input = button.parentElement.querySelector(".qty-input");
+                let currentValue = parseInt(input.value) || 0;
+                let newValue = Math.max(currentValue + change,0);
+                input.value = newValue;
+            
+                saveQuantities();
+            }
+
+            function saveQuantities() {
+                let savedQuantities = {};
+
+                document.querySelectorAll(".menu-item").forEach(item => {
+                    let itemName = item.querySelector("input[name='menu_item_name[]']").value;
+                    let quantity = item.querySelector(".qty-input").value;
+                    savedQuantities[itemName] = quantity;
+                })
+
+                sessionStorage.setItem("order_quantity", JSON.stringify(savedQuantities));
+            }
+
+            function loadQuantities() {
+                let savedQuantities = JSON.parse(sessionStorage.getItem("order_quantity")) || {};
+
+                document.querySelectorAll(".menu-item").forEach(item => {
+                    let itemName = item.querySelector("input[name='menu_item_name[]']").value;
+                    let input = item.querySelector(".qty-input");
+                    if (savedQuantities[itemName]) {
+                        input.value = savedQuantities[itemName];
+                    }
+                })
+            }
+
+            document.addEventListener("DOMContentLoaded", loadQuantities);
+            document.querySelector("form").addEventListener("submit", saveQuantities);
+   </script>
+   {% endblock %}
+
+
+   <style>
+       :root {
+           --primary-color: #A31D1D;
+           --secondary-color: #3B8F5D;
+           --background-color: #f5f5f5;
+           --text-color: #333;
+           --sidebar-width: 250px;
+           --sidebar-width-minimized: 80px;
+           --transition-speed: 0.3s;
+       }
+
+
+       * {
+           margin: 0;
+           padding: 0;
+           box-sizing: border-box;
+       }
+
+
+       body {
+           font-family: 'Poppins', sans-serif;
+           background-color: var(--background-color);
+           color: var(--text-color);
+           display: flex;
+           min-height: 100vh;
+       }
+
+       .sidebar {
+           width: var(--sidebar-width);
+           height: 100vh;
+           background-color: #fff;
+           padding: 20px;
+           position: fixed;
+           left: 0;
+           top: 0;
+           display: flex;
+           flex-direction: column;
+           transition: width var(--transition-speed) ease;
+           overflow-x: hidden;
+           z-index: 1000;
+           box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+       }
+
+
+       .sidebar.minimized {
+           width: var(--sidebar-width-minimized);
+       }
+
+
+       .sidebar-header {
+           display: flex;
+           align-items: center;
+           justify-content: space-between;
+           margin-bottom: 30px;
+       }
+
+
+       .sidebar-header h2 {
+           color: var(--primary-color);
+           font-size: 24px;
+           font-weight: 700;
+           white-space: nowrap;
+       }
+
+
+       .toggle-btn {
+           background: none;
+           border: none;
+           color: var(--primary-color);
+           font-size: 24px;
+           cursor: pointer;
+       }
+
+
+       .nav-item {
+           margin-bottom: 10px;
+           list-style-type: none;
+       }
+
+
+       .nav-link {
+           display: flex;
+           align-items: center;
+           padding: 10px;
+           color: var(--text-color);
+           text-decoration: none;
+           border-radius: 8px;
+           transition: all var(--transition-speed) ease;
+       }
+
+
+       .nav-link:hover, .nav-link.active {
+           background-color: var(--primary-color);
+           color: #fff;
+       }
+
+
+       .nav-link i {
+           margin-right: 10px;
+           font-size: 18px;
+           width: 24px;
+           text-align: center;
+       }
+
+
+       .nav-link span {
+           white-space: nowrap;
+       }
+
+
+       .sidebar.minimized .nav-link span {
+           display: none;
+       }
+
+
+       .nav-bottom {
+           margin-top: auto;
+           border-top: 1px solid #eee;
+           padding-top: 20px;
+       }
+
+
+       .content {
+           flex-grow: 1;
+           margin-left: var(--sidebar-width);
+           padding: 20px;
+           transition: margin-left var(--transition-speed) ease;
+       }
+
+
+       .sidebar.minimized + .content {
+           margin-left: var(--sidebar-width-minimized);
+       }
+
+
+       .order-card {
+           background: white;
+           padding: 20px;
+           border-radius: 15px;
+           box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+           margin-bottom: 20px;
+       }
+
+
+       .menu-item {
+           background: #e9ecef;
+           padding: 15px;
+           border-radius: 10px;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 10px;
+       }
+
+
+       .payment-buttons {
+           position: fixed;
+           top: 20px;
+           right: 20px;
+           display: flex;
+           flex-direction: column;
+           gap: 10px;
+           z-index: 1000;
+       }
+
+
+       .btn {
+           font-size: 18px;
+           padding: 12px 24px;
+           border-radius: 8px;
+           border: none;
+           cursor: pointer;
+           transition: all var(--transition-speed) ease;
+           text-align: center;
+           font-weight: 600;
+       }
+
+
+       .btn-primary {
+           background-color: var(--primary-color);
+           color: white;
+       }
+
+
+       .btn-secondary {
+           background-color: var(--secondary-color);
+           color: white;
+       }
+
+
+       .btn:hover {
+           opacity: 0.9;
+           transform: translateY(-2px);
+       }
+
+
+       .qty-control {
+           display: flex;
+           align-items: center;
+           gap: 10px;
+       }
+
+
+       .qty-btn {
+           border: none;
+           background-color: #f8d7da;
+           color: #721c24;
+           width: 30px;
+           height: 30px;
+           border-radius: 50%;
+           font-size: 18px;
+           cursor: pointer;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           transition: all 0.2s ease;
+       }
+
+
+       .qty-btn:hover {
+           background-color: #f5c6cb;
+       }
+
+
+       .qty-input {
+           width: 50px;
+           text-align: center;
+           border: 1px solid #ced4da;
+           border-radius: 5px;
+           font-size: 16px;
+           padding: 5px;
+       }
+
+       @media (max-width: 768px) {
+           .sidebar {
+               width: var(--sidebar-width-minimized);
+           }
+
+           .content {
+               margin-left: var(--sidebar-width-minimized);
+           }
+
+
+           .payment-buttons {
+               position: fixed;
+               bottom: 20px;
+               top: auto;
+               right: 20px;
+               flex-direction: row;
+           }
+       }
+   </style>
+</head>
+<body>
+   <div class="sidebar" id="sidebar">
+       {% block sidebar %}
+       <div class="sidebar-header">
+           <h2>Hao Tasty</h2>
+       </div>
+       <nav>
+           <ul>
+                <li class="nav-item"><a href="{% url 'landingpage' %}" class="nav-link"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li class="nav-item"><a href="{% url 'order_input' %}" class="nav-link"><i class="fas fa-utensils"></i><span>Menu</span></a></li>
+                <li class="nav-item"><a href="{% url 'menu_dashboard' %}" class="nav-link"><i class="fas fa-edit"></i><span>Customize Menu</span></a></li>
+                <li class="nav-item"><a href="{% url 'input_expenses' %}" class="nav-link"><i class="fas fa-money-bill-wave"></i><span>Input Expenses</span></a></li>
+                <li class="nav-item"><a href="{% url 'expense_list' %}" class="nav-link"><i class="fas fa-list-ul"></i><span>List of Expenses</span></a></li>
+                <li class="nav-item"><a href="{% url 'menu_dashboard' %}" class="nav-link"><i class="fas fa-chart-line"></i><span>List of Sales</span></a></li>
+                <li class="nav-item"><a href="{% url 'view_reports' %}" class="nav-link"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+             </ul>
+       </nav>
+       <nav class="nav-bottom">
+           <ul>
+               <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-user-circle"></i><span>Profile</span></a></li>
+               <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+           </ul>
+       </nav>
+       {% endblock %}
+   </div>
+   <div class="content">
+       {% block content %}
+       {% endblock %}
+   </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+.header {
+    background-color: #AC165E; 
+    color: #ffffff; 
+    padding: 10px;
+    text-align: left; 
+}
+
+body {
+    font-family: 'Roboto', sans-serif !important;
+}
+
+.card-header{
+    background-color: rgb(189, 77, 131); 
+    color: #ffffff;  
+}
+
+.card-body{
+    background-color: #ffeef7;  
+ 
+}
+
+.btn-pink {
+    color: #fff;
+    background-color: #ff4081;
+    border-color: #ff4081;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.btn-pink:hover {
+    color: #fff;
+    background-color: #AC165E;
+    border-color: #AC165E;
+}
+
+.info-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.custom-box {
+    background-color: #fff !important;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.card-pay{
+    background-color: #AC165E;
+ 
+}

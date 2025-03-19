@@ -1,0 +1,164 @@
+{% extends 'payroll_app/base.html' %} <!--extends base.html-->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Payroll {% endblock %}
+
+<!-- TABLE --> 
+<!--Should list All Employees-->
+
+{% block content %}
+
+{% if messages %}
+<div class="alert alert-warning" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+    <div class="container align-items-center">
+        <div class="row">
+            <div class="form-header col-md-10">
+                <h3><b>Payroll Creation</b></h3> 
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="card-body col-md-10 align-items-center p-4">
+                <form method="POST" action="{% url 'payslip' %}">
+                    {% csrf_token %}
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                        </div>
+
+                        <div class="form-group col-md-4 text-center">
+                            <label for="id_number">Payroll For:</label>
+                            <select id="id_number" name="id_number" class="form-select" required>
+                                <option>All Employees</option>
+                                {% for c in employees_objects %}
+                                <option>{{ c.id_number }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <br>
+                
+                    <div class="row"> 
+                        <div class="form-group col-md-4">
+                            <label for="month">Month:</label>
+                            <select id="month" name="month" class="form-select" required>
+                                <option>January</option>
+                                <option>February</option>
+                                <option>March</option>
+                                <option>April</option>
+                                <option>May</option>
+                                <option>June</option>
+                                <option>July</option>
+                                <option>August</option>
+                                <option>September</option>
+                                <option>October</option>
+                                <option>November</option>
+                                <option>December</option>
+                            </select>
+                        </div>
+        
+                        <div class="form-group col-md-4">
+                            <label for="year">Year:</label>
+                            <input type="text" id="year" name="year" class="form-control" required>
+                        </div>
+                    
+                        <div class="form-group col-md-4">
+                            <label for="cycle">Cycle:</label>
+                            <select id="cycle" name="cycle" class="form-select" required>
+                                <option>1</option>
+                                <option>2</option>
+                            </select>
+                        </div>
+                    </div>
+
+        
+                    <br>
+                    <div class="row"> 
+                        <div class="col-md-4">
+                        </div>
+
+                        <div class="form-group col-md-4 text-center">
+                            <button type="submit" name="payslip" class="btn btn-success btn-block">Create Payslips</button>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
+    <div class="container">
+        <div class="row">
+            <div class="form-header col-md-8">
+                <h3><b>Payslips Summary</b></h3> 
+            </div>
+
+            <div class="form-header text-end col-md-4">                
+                <form method="POST" action="{% url 'payslip' %}">
+                    {% csrf_token %}
+                    <div class="row text-center">
+                        <div class="form-group col-md-7">
+                            <select id="sort" name="sort" class="form-select" required>
+                                <option value="" disabled selected>Last Selected: {{ request.session.sort }} </option>
+                                <option>By ID Number</option>
+                                <option>By Date</option>
+                                <option>By Total Pay</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-5 text-center">
+                            <button type="submit" name="sort_payslip" class="btn btn-pink btn-block">Sort Payslips</button>
+                        </div> 
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="container">    
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped p-2">
+                    <thead>
+                        <tr>
+                            <th class="table-dark" scope="col"> ID Number </th>
+                            <th class="table-dark" scope="col"> Date </th>
+                            <th class="table-dark" scope="col"> Cycle </th>
+                            <th class="table-dark" scope="col"> Total Pay </th>
+                            <th class="table-dark" scope="col"> Options </th>    
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for d in payslip_objects %}
+                        <tr>
+                            <td> {{ d.id_number.id_number }} </td>
+                            <td> {{ d.month }} {{d.date_range}} {{d.year}} </td>
+                            <td> {{ d.pay_cycle }} </td>
+                            <td> {{ d.total_pay }} </td>
+                            <td><a href="view_payslip/{{ d.pk }}" class ="btn btn-secondary"> View </a>
+                                <a href="update_payslip/{{ d.pk }}" class ="btn btn-primary"> Update </a>
+                                <a href="delete_payslip/{{ d.pk }}" class ="btn btn-danger"> Delete </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %} 

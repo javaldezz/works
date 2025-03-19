@@ -1,0 +1,66 @@
+{% extends 'payroll_app/base.html' %} <!--extends base.html-->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Update Employee: {{ employee.name}} {% endblock %}
+
+<!-- CARD --> 
+<!--Should Contain the Old Information about An Employee-->
+
+{% block content %}
+
+{% if messages %}
+<div class="alert alert-primary" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container mt-7">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header">
+                    <h3 class="text-center my-4">Edit Employee</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'update_employee' employee.id_number %}">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="name" value="{{ employee.name }}" required>
+                            <label for="name">Name</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="id_number" name="id_number" placeholder="id_number" value="{{ employee.id_number }}" required>
+                            <label for="id_number">ID Number</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="rate" name="rate" placeholder="rate" value="{{ employee.rate }}" required>
+                            <label for="rate">Rate</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            {% if employee.allowance == 0 %}
+                                <input type="text" class="form-control" id="allowance" name="allowance" placeholder="allowance" value="{{ employee.allowance }}">
+                            {% else %}
+                                <input type="text" class="form-control" id="allowance" name="allowance" placeholder="allowance" value="{{ employee.allowance }}">
+                            {% endif %}
+                            <label for="allowance">Allowance (optional)</label>
+                        </div>
+
+                        <div class="d-row text-center">
+                            <button type="submit" class="btn btn-success btn-block">Update</button>
+                            <a href="/employees" class="btn btn-secondary btn-block">Cancel</a>
+                            <a href="/delete_employee/{{ employee.id_number }}" class="btn btn-danger btn-block">Delete</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

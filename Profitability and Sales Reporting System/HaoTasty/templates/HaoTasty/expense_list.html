@@ -1,0 +1,388 @@
+{% extends 'employeebase.html' %}
+{% block title %}List of Expenses{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <h1 class="page-title">List of Expenses</h1>
+        <div class="employee-indicator">
+            <div class="employee-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="5"></circle>
+                    <path d="M20 21a8 8 0 0 0-16 0"></path>
+                </svg>
+            </div>
+            <span>Employee</span>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button id="updateBtn" class="btn btn-update">UPDATE</button>
+        <button id="submitBtn" class="btn btn-submit" style="display: none;">SUBMIT</button>
+    </div>
+
+    <div class="expenses-container">
+        <div class="expenses-header">
+            <div>Date</div>
+            <div>Amount</div>
+            <div>Expense</div>
+            <div>Category</div>
+            <div class="delete-header" style="display: none;"></div>
+        </div>
+
+        <div class="expense-row">
+            <div>
+                <input type="text" class="expense-input" value="2024/09/12" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="150" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="Cooking oil, 1L" readonly>
+            </div>
+            <div>
+                <select class="category-select" disabled>
+                    <option selected>Market</option>
+                    <option>Utilities</option>
+                    <option>Salary</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="delete-container" style="display: none;">
+                <button class="delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="expense-row">
+            <div>
+                <input type="text" class="expense-input" value="2024/09/12" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="270" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="Rice, 5kg" readonly>
+            </div>
+            <div>
+                <select class="category-select" disabled>
+                    <option selected>Market</option>
+                    <option>Utilities</option>
+                    <option>Salary</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="delete-container" style="display: none;">
+                <button class="delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="expense-row">
+            <div>
+                <input type="text" class="expense-input" value="2024/09/12" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="100" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="Onions and garlic" readonly>
+            </div>
+            <div>
+                <select class="category-select" disabled>
+                    <option selected>Market</option>
+                    <option>Utilities</option>
+                    <option>Salary</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="delete-container" style="display: none;">
+                <button class="delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="expense-row">
+            <div>
+                <input type="text" class="expense-input" value="2024/09/12" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="150" readonly>
+            </div>
+            <div>
+                <input type="text" class="expense-input" value="Togue" readonly>
+            </div>
+            <div>
+                <select class="category-select" disabled>
+                    <option selected>Market</option>
+                    <option>Utilities</option>
+                    <option>Salary</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="delete-container" style="display: none;">
+                <button class="delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn btn-back">BACK</button>
+    </div>
+</div>
+
+<style>
+    /* Main content styles */
+    .main-content {
+        background-color: #e9e9e9;
+        min-height: 100vh;
+        padding: 40px;
+        margin-left: 250px;
+    }
+
+    /* Header styles */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    /* Employee indicator */
+    .employee-indicator {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .employee-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        background-color: #e0e0e0;
+        border-radius: 50%;
+    }
+
+    /* Button styles */
+    .btn-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        padding: 15px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        width: 250px;
+        text-align: center;
+    }
+
+    .btn-update {
+        background-color: #ffd9d9;
+        color: #000;
+    }
+
+    .btn-submit {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .btn-back {
+        background-color: #e0e0e0;
+        color: #000;
+        margin-top: 20px;
+    }
+
+    /* Expenses container */
+    .expenses-container {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* Expenses table */
+    .expenses-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr 1fr auto;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        font-weight: bold;
+    }
+
+    .expense-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr 1fr auto;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        align-items: center;
+    }
+
+    .expense-row:last-child {
+        border-bottom: none;
+    }
+
+    /* Form inputs */
+    .expense-input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 90%;
+        background-color: #f9f9f9;
+    }
+
+    .expense-input:not([readonly]) {
+        background-color: white;
+    }
+
+    .category-select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 90%;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-color: #f9f9f9;
+    }
+
+    .category-select:not([disabled]) {
+        background-color: white;
+    }
+
+    /* Delete button */
+    .delete-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .delete-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        color: #666;
+        transition: color 0.2s;
+    }
+
+    .delete-btn:hover {
+        color: #ff4444;
+    }
+
+    /* Center align text in cells */
+    .expenses-header div {
+        text-align: center;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const updateBtn = document.getElementById('updateBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const backBtn = document.querySelector('.btn-back');
+        const inputs = document.querySelectorAll('.expense-input');
+        const selects = document.querySelectorAll('.category-select');
+        const deleteContainers = document.querySelectorAll('.delete-container');
+        const deleteHeader = document.querySelector('.delete-header');
+        
+        // Enable editing when UPDATE button is clicked
+        updateBtn.addEventListener('click', function() {
+            // Enable all inputs and selects
+            inputs.forEach(input => {
+                input.removeAttribute('readonly');
+            });
+            
+            selects.forEach(select => {
+                select.removeAttribute('disabled');
+            });
+            
+            // Show delete buttons
+            deleteContainers.forEach(container => {
+                container.style.display = 'flex';
+            });
+            
+            // Show delete header
+            deleteHeader.style.display = 'block';
+            
+            // Hide UPDATE button and show SUBMIT button
+            updateBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+        });
+        
+        // Handle delete button clicks
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const row = this.closest('.expense-row');
+                if (confirm('Are you sure you want to delete this expense?')) {
+                    row.remove();
+                }
+            });
+        });
+        
+        // Save changes when SUBMIT button is clicked
+        submitBtn.addEventListener('click', function() {
+            // Disable all inputs and selects
+            inputs.forEach(input => {
+                input.setAttribute('readonly', true);
+            });
+            
+            selects.forEach(select => {
+                select.setAttribute('disabled', true);
+            });
+            
+            // Hide delete buttons
+            deleteContainers.forEach(container => {
+                container.style.display = 'none';
+            });
+            
+            // Hide delete header
+            deleteHeader.style.display = 'none';
+            
+            // Hide SUBMIT button and show UPDATE button
+            submitBtn.style.display = 'none';
+            updateBtn.style.display = 'block';
+            
+            // Show success message
+            alert('Expenses updated successfully!');
+        });
+        
+        // Navigate back when BACK button is clicked
+        backBtn.addEventListener('click', function() {
+            window.history.back();
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Delete Employee: {{ employee.name}} {% endblock %}
+
+{% if messages %}
+<div class="alert alert-primary" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- CARD --> 
+<!--Should Contain Prompt to ask if they will delete an Employee-->
+
+{% block content %}
+
+<div class="container mt-7">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header">
+                    <h3 class="text-center my-4">Delete Employee</h3>
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">Employee Information</h5>
+                    <div class="row">
+                        <div class="col-md-4 ">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Name</h6>
+                                    <p class="card-text">{{ employee.name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 ">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">ID Number</h6>
+                                    <p class="card-text">{{ employee.id_number }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 ">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Rate</h6>
+                                    <p class="card-text">{{ employee.rate }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                        
+                    <br>
+
+                    <p> <strong> Are you sure you want to delete this employee? </strong> <br> All payslips under this account will also be deleted.</p>
+                    <form method="POST" action="{% url 'delete_employee' employee.id_number %}">
+                        {% csrf_token %}
+                        <div class="d-row text-center">
+                            <button type="submit" class="btn btn-danger btn-block">Yes, Delete</button>
+                            <a href="/employees" class="btn btn-primary btn-block">No, Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

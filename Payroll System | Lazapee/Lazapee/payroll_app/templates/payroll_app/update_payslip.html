@@ -1,0 +1,155 @@
+{% extends 'payroll_app/base.html' %} <!--extends base.html-->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Update Payslip ID {{ payslip.pk }} {% endblock %}
+
+<!-- CARD --> 
+<!--Should Contain the Old Information about An Employee-->
+
+{% block content %}
+
+{% if messages %}
+<div class="alert alert-primary" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container mt-7">
+    <div class="row justify-content-center">
+
+     
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header">
+                    <h3 class="text-center my-4">Payslip Information</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body" style="background-color: white;">
+                                    <h6 class="card-subtitle mb-2 text-muted"> Employee Name</h6>
+                                    <p class="card-text">{{ payslip.id_number.name }}</p>
+                                    <h6 class="card-subtitle mb-2 text-muted"> Employee ID Number</h6>
+                                    <p class="card-text">{{ payslip.id_number.id_number }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body" style="background-color: white;">
+                                    <h6 class="card-subtitle mb-2 text-muted"> Gross Pay</h6>
+                                    <p class="card-text">{{ payslip.total_earnings }}</p>
+                                    <h6 class="card-subtitle mb-2 text-muted">Total Deductions</h6>
+                                    <p class="card-text">{{ payslip.total_deductions }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br> 
+
+                    <div class="row">
+                        <div class="col-md-4 container-fluid">
+                            <div class="card">
+                                <div class="card-body" style="background-color: white;">
+                                    <h6 class="card-subtitle mb-2 text-muted">Total Pay </h6>
+                                    <p class="card-text">{{ payslip.total_pay }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                        
+                    <br>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header">
+                    <h3 class="text-center my-4">Update Payslip</h3>
+                </div>
+
+                <div class="container">
+                    <div class="row">
+                        <div class="card-body col-md-10 align-items-center p-4">
+                            <form method="POST" action="{% url 'update_payslip' payslip.pk %}">
+                                {% csrf_token %}
+                                <div class="row text-center">
+                                    <div class="col-md-4">
+                                    </div>
+            
+                                    <div class="form-group col-md-4 text-center">
+                                        <label for="id_number">Payroll For:</label>
+                                        <select id="id_number" name="id_number" class="form-select" value="{{ payslip.id_number }}" required>
+                                            <option value="" disabled selected>{{ payslip.id_number.id_number }} </option>
+                                            <option>All Employees</option>
+                                            {% for c in employees_objects %}
+                                            <option>{{ c.id_number }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+            
+                                <br>
+                            
+                                <div class="row"> 
+                                    <div class="form-group col-md-4">
+                                        <label for="month">Month:</label>
+                                        <select id="month" name="month" class="form-select" value="{{ payslip.month }}"required>
+                                            <option value="" disabled selected>{{ payslip.month }} </option>
+                                            <option>January</option>
+                                            <option>February</option>
+                                            <option>March</option>
+                                            <option>April</option>
+                                            <option>May</option>
+                                            <option>June</option>
+                                            <option>July</option>
+                                            <option>August</option>
+                                            <option>September</option>
+                                            <option>October</option>
+                                            <option>November</option>
+                                            <option>December</option>
+                                        </select>
+                                    </div>
+                    
+                                    <div class="form-group col-md-4">
+                                        <label for="year">Year:</label>
+                                        <input type="text" id="year" name="year" class="form-control" value="{{ payslip.year }}" required>
+                                    </div>
+                                
+                                    <div class="form-group col-md-4">
+                                        <label for="cycle">Cycle:</label>
+                                        <select id="cycle" name="cycle" class="form-select" value="{{ payslip.pay_cycle }}"required>
+                                            <option value="" disabled selected>{{ payslip.pay_cycle }} </option>
+                                            <option>1</option>
+                                            <option>2</option>
+                                        </select>
+                                    </div>
+                                </div>
+            
+                    
+                                <br>
+                                <div class="row"> 
+                                    <div class="col-md-4">
+                                    </div>
+            
+                                    <div class="form-group col-md-12 text-center">
+                                        <button type="submit" name="update_payslip" class="btn btn-success btn-block">Update Payslip</button>
+                                        <a href="/payslip" class="btn btn-secondary btn-block">Cancel</a>
+                                        <a href="/delete_payslip/{{ payslip.pk }}" class="btn btn-danger btn-block">Delete</a>
+                                    </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

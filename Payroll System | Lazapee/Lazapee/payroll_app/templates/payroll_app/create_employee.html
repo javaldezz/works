@@ -1,0 +1,61 @@
+{% extends 'payroll_app/base.html' %} <!--extends base.html-->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Create Employee {% endblock %}
+
+<!-- CARD --> 
+<!--Should Create An Employee-->
+
+{% block content %}
+
+{% if messages %}
+<div class="alert alert-warning" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container mt-7">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header">
+                    <h3 class="text-center my-4">Create Employee</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'create_employee' %}">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="name" required>
+                            <label for="name">Name</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="id_number" name="id_number" placeholder="id_number" required>
+                            <label for="id_number">ID Number</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="rate" name="rate" placeholder="rate" required>
+                            <label for="rate">Rate</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="allowance" name="allowance" placeholder="allowance">
+                            <label for="allowance">Allowance (optional)</label>
+                        </div>
+
+                        <div class="d-row text-center">
+                            <button type="submit" class="btn btn-success btn-block">Submit </button>
+                            <a href="/employees" class="btn btn-danger btn-block">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

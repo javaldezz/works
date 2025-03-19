@@ -1,0 +1,132 @@
+{% extends "employeebase.html" %}
+{% block title %}Order Input{% endblock %}
+{% block content %}
+   <style>
+       .main-container {
+           display: flex;
+           gap: 20px;
+           width: 100%;
+           padding: 20px;
+           box-sizing: border-box;
+       }
+
+       .order-container {
+           flex: 2;
+           padding: 15px;
+           border: 1px solid #ddd;
+           border-radius: 8px;
+           background-color: #f9f9f9;
+       }
+
+       .payment-container {
+           flex: 1;
+           padding: 20px;
+           border: 1px solid #ddd;
+           border-radius: 8px;
+           background-color: #f9f9f9;
+           text-align: center;
+       }
+
+       .menu-item {
+           display: flex;
+           align-items: center;
+           justify-content: space-between;
+           padding: 10px;
+           border-bottom: 1px solid #ccc;
+       }
+
+       .qty-control {
+           display: flex;
+           align-items: center;
+           gap: 5px;
+       }
+
+       .qty-control button {
+           width: 30px;
+           height: 30px;
+           font-size: 18px;
+           border: none;
+           background-color: #e0e0e0;
+           cursor: pointer;
+           border-radius: 50%;
+       }
+
+       .qty-input {
+           width: 40px;
+           text-align: center;
+           border: 1px solid #ccc;
+           border-radius: 5px;
+           padding: 5px;
+           font-size: 16px;
+       }
+
+       .payment-container button {
+           display: block;
+           text-align: center;
+           text-decoration: none;
+           font-size: 18px;
+           padding: 12px;
+           border-radius: 8px;
+           font-weight: bold;
+           width: 100%;
+           margin-bottom: 10px;
+       }
+
+       .btn-cash {
+           background-color: #2E7D32;
+           color: white;
+       }
+
+       .btn-gcash {
+           background-color: #1976D2;
+           color: white;
+       }
+
+       .cancel-btn {
+           width: 100%;
+           background-color:#A31D1D;
+           color: white;
+           font-size: 18px;
+           padding: 12px;
+           border: none;
+           border-radius: 8px;
+           margin-top: 20px;
+           cursor: pointer;
+       }
+   </style>
+
+   <form method="POST" action="{% url 'make_order' %}">{% csrf_token %}
+       <div class="main-container">
+           <div class="order-container">
+               <h1>Create Order</h1>
+               <div class="order-card">
+                   <h4>Item</h4>
+
+                   {% for item in menu_items %}
+                       <div class="menu-item">
+                           <span>{{ item.menu_item_name }}</span>
+                           <input type="hidden" name="menu_item_name[]" value="{{ item.menu_item_name }}">
+                           <input type="hidden" name="menu_item_price[]" value="{{ item.menu_item_price }}">
+
+                           <div class="qty-control">
+                               <button type="button" onclick="updateQuantity(this, -1)">-</button>
+                               <input type="number" min="0" value="0" class="qty-input" name="order_quantity[]" readonly>
+                               <button type="button" onclick="updateQuantity(this, 1)">+</button>
+                           </div>
+                       </div>
+                   {% empty %}
+                       <p>No menu items found.</p>
+                   {% endfor %}
+               </div>
+
+               <button type="button" class="cancel-btn" onclick="resetQuantities()">CANCEL</button>
+           </div>
+
+           <div class="payment-container">
+               <h2>Select Payment</h2>
+               <button type="submit" name="cash" value="cash" class="btn-cash">Cash</a>
+               <button type="submit" name="gcash" value="gcash" class="btn-gcash">GCash</a>               
+           </div>
+       </div>
+   </form>
+{% endblock %}

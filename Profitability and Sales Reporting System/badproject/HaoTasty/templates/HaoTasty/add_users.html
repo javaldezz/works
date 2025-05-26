@@ -1,0 +1,374 @@
+{% extends "base.html" %}
+{% block title %}Add User{% endblock %}
+{% block content %}
+<style>
+     body {
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+        margin: 0;
+        display: flex;
+        background-color: #f4f4f4;
+    }
+
+ .main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.user-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input, select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    width: 100%;
+}
+
+.add-user-btn {
+    margin-top: 20px;
+    padding: 12px;
+    background-color:  #223170;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.add-user-btn:hover {
+    background-color: #1f2644;
+}
+
+.messages {
+color: red;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.alert {
+  margin-bottom: 8px;
+  border-radius: 6px;
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.btn-submit {
+      background-color: #4CAF50;
+      color: white;
+  }
+
+  /* Modal Styles */
+  .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+  }
+
+
+
+
+  .modal-content {
+      background-color: white;
+      margin: 15% auto;
+      padding: 0;
+      border-radius: 8px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      animation: modalFadeIn 0.3s;
+  }
+
+
+
+
+  @keyframes modalFadeIn {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+  }
+
+
+
+
+  .modal-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+
+
+
+  .modal-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+  }
+
+
+
+
+  .close {
+      color: #aaa;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+  }
+
+
+
+
+  .close:hover {
+      color: #555;
+  }
+
+
+
+
+  .modal-body {
+      padding: 20px;
+  }
+
+
+
+
+  .modal-footer {
+      padding: 15px 20px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+  }
+
+
+
+
+  .btn-cancel, .btn-confirm {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+  }
+
+
+
+
+  .btn-cancel {
+      background-color: #A31D1D;
+      color: white;
+  }
+
+
+
+
+  .btn-confirm {
+      background-color: #4CAF50;
+      color: white;
+  }
+
+
+
+
+  .btn-cancel:hover {
+      background-color: #5b1010;
+  }
+
+
+
+
+  .btn-confirm:hover {
+      background-color: #45a049;
+  }
+
+  
+  /* Button styles */
+  .btn-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+  }
+
+
+
+
+  .btn {
+      padding: 15px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 250px;
+      text-align: center;
+  }
+
+
+
+
+  .btn-update {
+      background-color: #ffd9d9;
+      color: #000;
+  }
+
+
+
+
+  .btn-submit {
+      background-color: #4CAF50;
+      color: white;
+  }
+
+
+
+
+  .btn-back {
+      background-color: #e0e0e0;
+      color: #000;
+      margin-top: 20px;
+  }
+
+</style>
+
+
+<div class="main-content">
+    <div class="container">
+        <div class="header">
+            <h1>Add User</h1>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %} 
+            <div class="user-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+                <div class="input-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" id="first_name" name="first_name" placeholder="Enter first name" required>
+                </div>
+                <div class="input-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" placeholder="Enter last name" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                </div>
+                <div class="input-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
+                </div>
+                <div class="input-group">
+                    <label for="user_type">User Type</label>
+                    <select id="user_type" name="user_type" required>
+                        <option value="" disabled selected>Select user type</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </div>
+                <button type="submit" class="add-user-btn">Add New User</button>
+                <div class="messages">
+                    {% if messages %}
+                    <ul>
+                    {% for message in messages %}
+                      <li class="alert {{ alert.danger }}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div id="submit-modal" class="modal">
+    <div class="modal-content">
+        <p>Are you sure you want to add this user?</p>
+        <button id="confirm-submit" class="btn-confirm">Yes</button>
+        <button id="cancel-submit" class="btn-cancel">No</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const addUserBtn = document.querySelector('.add-user-btn');
+    const modal = document.getElementById('submit-modal');
+    const confirmYes = document.getElementById('confirm-submit');
+    const confirmNo = document.getElementById('cancel-submit');
+
+    addUserBtn.addEventListener('click', function (event) {
+        event.preventDefault(); // Stop form from submitting immediately
+        modal.style.display = 'flex'; // Show confirmation modal
+    });
+
+    confirmYes.addEventListener('click', function () {
+        modal.style.display = 'none';
+        form.submit(); // Submit only when user confirms
+    });
+
+    confirmNo.addEventListener('click', function () {
+        modal.style.display = 'none'; // Cancel modal
+    });
+
+    // close modal if user clicks outside
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+</script>
+    
+
+{% endblock %}

@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+
+<style>
+
+    .actions {
+        display: flex;
+        gap: 10px; /* Adjusts spacing between buttons */
+        align-items: center;
+    }
+
+    body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+            }
+            
+    .main-content {
+        flex: 1;
+        padding: 20px;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .table-container {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #eee;
+    }
+    .actions {
+        text-align: center;
+        width: 140px; 
+    }
+    .edit-btn, .delete-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        color: white;
+    }
+    .edit-btn {
+        background-color: grey;
+        color: white;
+    }
+    .edit-btn:hover {
+        background-color: rgb(196, 193, 193);
+    }
+    .delete-btn {
+        background-color: #d9534f;
+        color: white;
+    }
+    .delete-btn:hover {
+        background-color: #c9302c;
+    }
+
+
+    
+.add-user {
+    margin-top: 15px;
+    font-weight: bold;
+    background-color: #223170; 
+    color: white;
+    text-decoration: none; 
+    text-align: center;
+    padding: 10px 15px;
+    display: inline-block;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-user:hover {
+    background-color: #1f2644;
+}
+
+
+.messages {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.alert {
+  padding: 15px 25px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  background-color: #fdecea;
+  color: #b00020;
+  border-color: #f5c2c7;
+}
+
+.alert-warning {
+  background-color: #fff4e5;
+  color: #8a6d3b;
+  border-color: #ffeeba;
+}
+
+.alert-success {
+  background-color: #edf7ed;
+  color: #2e7d32;
+  border-color: #c3e6cb;
+}
+
+
+/* Modal Styles */
+.modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 0;
+        border-radius: 8px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        animation: modalFadeIn 0.3s;
+    }
+
+    @keyframes modalFadeIn {
+        from {opacity: 0; transform: translateY(-20px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .close {
+        color: #aaa;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: #555;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-cancel, .btn-confirm {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-cancel {
+        background-color: #A31D1D;
+        color: white;
+    }
+
+    .btn-confirm {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        background-color: #5b1010;
+    }
+
+    .btn-confirm:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<div class="main-content">
+    <div class="header">
+        <h1>Manage Users</h1>
+        <div>Current Date: <strong id="current-date"></strong></div>
+    </div>
+
+    <div class="messages">
+    {% if messages %}
+    {% for message in messages %}
+        <p class="alert">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    </div>
+
+    <div class="table-container">
+        <h3>Administrators</h3>
+        <table>
+            <tr>
+                <th>Date Added</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Make Changes</th>
+            </tr>
+            {% for user in user_objects %}
+            <tr>
+                {% if user.is_superuser == True %}
+                <td>{{user.date_joined}}</td>
+                <td name="username[]">{{user.username}}</td>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_name}}</td>
+                <td class="actions">
+                    <div></div>
+                    <a href="{% url 'update_users' user.id %}" class="edit-btn">Edit</a>
+                    <form action="{% url 'delete_users' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_username" value="{{user.username}}">
+                        <button type='submit' class="delete-btn">Delete</button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h3>Employees</h3>
+        <table>
+            <tr>
+                <th>Date Added</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Make Changes</th>
+            </tr>
+            {% for user in user_objects %}
+            <tr>
+                {% if user.is_superuser == False %}
+                <td>{{user.date_joined}}</td>
+                <td name="username[]">{{user.username}}</td>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_name}}</td>
+                <td class="actions">
+                    <a href="{% url 'update_users' user.id %}" class="edit-btn">Edit</a>
+                    <!-- Using a form to make the delete function work -->
+                    <form action="{% url 'delete_users' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_username" value="{{user.username}}">
+                        <button type='submit' class="delete-btn">Delete</button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{% url 'add_users' %}" class="add-user">+ Add New User</a>
+    </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="confirmation-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Confirm Deletion</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure?</p>
+        </div>
+        <div class="modal-footer">
+            <button id="confirm-btn" class="btn-confirm">YES</button>
+            <button id="cancel-btn" class="btn-cancel">NO</button>
+        </div>
+    </div>
+
+</div>
+
+
+</div>
+
+<script>
+    document.getElementById("current-date").textContent = new Date().toLocaleDateString();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal elements
+        const modal = document.getElementById('confirmation-modal');
+        const closeBtn = document.querySelector('.close');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const confirmBtn = document.getElementById('confirm-btn');
+        let deleteForm = null; // Store the form that should be submitted
+
+        // Attach event listeners to all delete buttons
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default button behavior
+
+                // Find the closest form (since delete buttons are inside forms)
+                deleteForm = this.closest('form');
+
+                // Show the modal
+                modal.style.display = 'block';
+            });
+        });
+
+        // Close modal when X button is clicked
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Close modal when Cancel button is clicked
+        cancelBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Confirm deletion
+        confirmBtn.addEventListener('click', function() {
+            if (deleteForm) {
+                deleteForm.submit(); // Submit the stored form
+            }
+            modal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "employeebase.html" %}
+{% block title %}Update User{% endblock %}
+{% block content %}
+
+<style>
+    body {
+        background-color: #f5f5f5;
+        font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+        }
+
+.main-content {
+flex: 1;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh; 
+padding: 20px;
+}
+
+.container {
+background: white;
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+width: 400px;
+}
+
+.header {
+text-align: center;
+margin-bottom: 20px;
+}
+
+h1 {
+font-size: 28px;
+font-weight: bold;
+margin: 0;
+}
+
+.user-form {
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+.input-group {
+display: flex;
+flex-direction: column;
+}
+
+label {
+font-weight: bold;
+margin-bottom: 5px;
+}
+
+input, select {
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 5px;
+background-color: #e9ecef;
+width: 100%;
+}
+
+.update-user-btn {
+margin-top: 20px;
+padding: 12px;
+background-color: #223170;
+color: white;
+font-size: 16px;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+transition: background 0.3s;
+}
+
+.update-user-btn:hover {
+background-color: #1f2644;
+}
+
+.back-btn {
+padding: 12px;
+font-size: 16px;
+background-color: gray;
+color: white;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+transition: background 0.3s;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+}
+
+.back-btn:hover {
+background-color: darkgray;
+}
+
+
+.messages {
+max-width: 600px;
+margin: 20px auto;
+}
+
+.alert {
+padding: 15px 25px;
+margin-bottom: 16px;
+border-radius: 6px;
+font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+font-size: 14px;
+text-align: center;
+font-weight: 500;
+border: 1px solid transparent;
+}
+
+.alert-danger {
+background-color: #fdecea;
+color: #b00020;
+border-color: #f5c2c7;
+}
+
+.alert-warning {
+background-color: #fff4e5;
+color: #8a6d3b;
+border-color: #ffeeba;
+}
+
+.alert-success {
+background-color: #edf7ed;
+color: #2e7d32;
+border-color: #c3e6cb;
+}
+
+</style>
+
+<div class="main-content">
+<div class="container">
+    <div class="header">
+        <h1>User Profile</h1>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="user-form">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            <div class="input-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+            </div>
+            <div class="input-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+            </div>
+            <div class="input-group">
+                <label for="user_type">User Type</label>
+                <span>{{ usert_profile.user_type }}</span>
+                <input type="hidden" name="user_type" value="{{ usert_profile.user_type }}">
+            </div>
+            <div class="input-group">
+                <label for="password">New Password</label>
+                <input type="text" id="password" name="password" placeholder="Leave blank to keep current password">
+            </div>
+            <div class="input-group">
+                <label for="password">Confirm New Password</label>
+                <input type="text" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
+            </div>
+            <button type="submit" class="update-user-btn">Save Changes</button>
+            <a href="{% url 'order_input' %}" class="back-btn">Back</a>  
+        </div>
+    </form>
+</div>
+
+{% endblock %}

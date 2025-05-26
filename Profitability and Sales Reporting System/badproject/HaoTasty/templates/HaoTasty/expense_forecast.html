@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+{% block title %}Expense Forecast{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Expense Forecast</title>
+   <style>
+    * {
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    }
+
+    .main-content {
+        background-color: #f0f0f0;
+        min-height: 100vh;
+        padding: 20px 30px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #222;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .date-display {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+    }
+
+    .date-label {
+        font-weight: 600;
+        margin-right: 8px;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+    }
+
+    .user-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-role {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .filter-controls {
+         display: flex;
+         justify-content: left; 
+         gap: 10px; 
+         margin-bottom: 30px;
+     }
+
+    .time-filters {
+        display: flex;
+        background-color: white;
+        border-radius: 50px;
+        overflow: hidden;
+    }
+
+    .time-filter {
+        padding: 12px 20px;
+        background-color: transparent;
+        border: none;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .time-filter.active {
+        background-color: #dfdfdf;
+        font-weight: 600;
+    }
+
+    .right-filters {
+        display: flex;
+        gap: 15px;
+    }
+
+    .items-filter {
+        display: flex;
+        align-items: center;
+        background-color: #dfdfdf;
+        padding: 0 20px;
+        border-radius: 50px;
+    }
+
+    .filter-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-right: 8px;
+    }
+
+    .filter-select {
+        padding: 12px 0;
+        border: none;
+        background-color: transparent;
+        min-width: 80px;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: calc(100% - 0px) center;
+        padding-right: 20px;
+    }
+
+   .view-btn {
+        background-color: #223170;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .view-btn:hover {
+        background-color:  #1f2644;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        align-items: center;
+    }
+
+    .summary-title {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .summary-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+    }
+
+    .chart-card {
+ background-color: white;
+ border-radius: 10px;
+ padding: 20px;
+ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+ display: inline-block; /* allows it to grow with content */
+ width: auto;            /* not constrained to a fixed width */
+ max-width: 100%;        /* optional: prevents overflow */
+}
+    
+    .chart-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .pie-chart {
+        width: 100%;
+        height: 220px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+
+    .bar-chart {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        justify-content: space-between;
+    }
+
+    .bar-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .bar-label {
+        width: 150px;
+        font-size: 0.8rem;
+        text-align: right;
+    }
+
+    .bar-container {
+        flex: 1;
+        height: 20px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .bar {
+        height: 100%;
+        background-color: #4CAF50;
+        border-radius: 4px;
+    }
+
+    .bar-value {
+        width: 50px;
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    .table-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        grid-column: span 2;
+    }
+
+    .table-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        padding: 20px;
+        color: #333;
+        background-color: #f9f9f9;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 12px 20px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        font-weight: 600;
+        color: #555;
+        font-size: 0.9rem;
+        background-color: #f5f5f5;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .line-chart-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        grid-column: span 3;
+        grid-row:span 5;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .percentage-badge {
+        background-color: #ffe0e0;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #d32f2f;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .percentage-badge svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .line-chart {
+        height: 200px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+
+
+.messages {
+max-width: 600px;
+margin: 20px auto;
+}
+
+.alert {
+padding: 15px 25px;
+margin-bottom: 16px;
+border-radius: 6px;
+font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+font-size: 14px;
+text-align: center;
+font-weight: 500;
+border: 1px solid transparent;
+}
+
+.alert-danger {
+background-color: #fdecea;
+color: #b00020;
+border-color: #f5c2c7;
+}
+
+.alert-warning {
+background-color: #fff4e5;
+color: #8a6d3b;
+border-color: #ffeeba;
+}
+
+.alert-success {
+background-color: #edf7ed;
+color: #2e7d32;
+border-color: #c3e6cb;
+}
+    @media (max-width: 992px) {
+        .content-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+
+        .line-chart-card {
+            grid-column: span 2;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .header-right {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .filter-controls {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .time-filters, .right-filters {
+            width: 100%;
+        }
+
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .table-card, .line-chart-card {
+            grid-column: span 1;
+        }
+    }
+</style>
+
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title">Expense Forecast</h1>
+            <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+                Days with Expense Records: {{ days_with_expense }}
+              </div>
+              <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+                Expense Record Count: {{ unique_expense_count }}
+            </div>
+            <div class="header-right">
+                <form method="GET" action="{% url 'expense_forecast' %}">
+                    {% csrf_token %}
+                    
+                    <!-- Active User Info -->
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                            </svg>
+                        </div>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Controls (Date & Menu Item) -->
+            <div class="filter-controls">
+                <input type="hidden" name="filter" id="filterInput" value="next_month">
+            <!-- Date Picker 
+            <div class="date-display filter-label">
+                <span class="date-label">Date:</span>
+                <input type="date" id="datePicker" name="datePicker" value="{{ date_selected }}">
+            </div>
+        -->
+                <div class="time-filters" id="filter">
+                    <button type="submit" class="time-filter" data-filter="next_month">Next Month</button>
+                    <button type="submit" class="time-filter" data-filter="next_3_months">Next 3 Months</button>
+                    <button type="submit" class="time-filter" data-filter="next_6_months">Next 6 Months</button>
+                    <button type="submit" class="time-filter" data-filter="next_12_months">Next 12 Months</button>
+                </div>
+                <!-- <button type="submit" id="viewForecastBtn" class="view-btn">View Forecast</button> -->
+            </div>
+        </form>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    
+        <div class="content-grid">
+            <!-- Forecast Summary Card -->
+            <div class="summary-card">
+                <div class="summary-title">Total Forecasted Expenses</div>
+                <div class="summary-value">₱{{ filtered_forecasted_expenses }}</div>
+            </div>
+        
+            <!-- Expenses Distribution (Bar Chart using HTML) -->
+            <div class="chart-card mt-6">
+                <div class="chart-title text-xl font-semibold mb-4">Expenses Distribution</div>
+                <div id="expensesBarChart" class="bar-chart"></div>
+            </div>
+
+            <!-- Predicted Expenses Per Category (Bar Chart using HTML) -->
+            <div class="chart-card mt-6">
+                <div class="chart-title text-xl font-semibold mb-4">Predicted Expenses Per Category</div>
+                <div id="categoryBarChart" class="bar-chart"></div>
+            </div>
+
+            <!-- Forecast Line Chart -->
+            <div class="line-chart-card mt-6">
+                <div class="chart-title text-xl font-semibold mb-4">Annual Expenses Comparison</div>
+                <div id="forecastChart" style="width: 100%; max-width: 800px; margin: auto;"></div>
+            </div>
+
+        </div>        
+
+
+    <!-- JavaScript -->
+    <!-- Include Plotly CDN -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".time-filter");
+        const filterInput = document.getElementById("filterInput");
+        const menuDropdown = document.getElementById("itemForecastDropdown");
+
+        let savedFilter = localStorage.getItem("selectedTimeFilter") ||
+                            new URLSearchParams(window.location.search).get("filter") ||
+                            "next_month";
+
+        buttons.forEach(button => {
+            if (button.getAttribute("data-filter") === savedFilter) {
+                button.classList.add("active");
+                filterInput.value = savedFilter;
+            }
+
+            button.addEventListener("click", function () {
+                buttons.forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+
+                const selected = this.getAttribute("data-filter");
+                filterInput.value = selected;
+                localStorage.setItem("selectedTimeFilter", selected);
+            });
+        });
+
+        if (menuDropdown) {
+            const savedMenuItem = localStorage.getItem("selectedMenuItem");
+            menuDropdown.value = savedMenuItem || menuDropdown.options[0].value;
+
+            menuDropdown.addEventListener("change", () => {
+                localStorage.setItem("selectedMenuItem", menuDropdown.value);
+            });
+        }
+
+        // Plotly Forecast Data
+        const forecastData = {{ forecast|safe }};
+
+        const monthlyLabels = forecastData.monthly_forecast.map(item => item.month);
+        const monthlyValues = forecastData.monthly_forecast.map(item => item.predicted_expenses);
+
+        // --- Line Chart: Annual Expenses Forecast ---
+        Plotly.newPlot('forecastChart', [{
+            x: monthlyLabels,
+            y: monthlyValues,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Forecasted Expenses',
+            line: { color: 'green' },
+            marker: { color: 'green' }
+        }], {
+            title: 'Forecasted Monthly Expenses',
+            xaxis: { title: 'Month' },
+            yaxis: { title: '₱ Amount', rangemode: 'tozero' },
+            margin: { t: 40 }
+        });
+
+        const formatCurrency = (amount) => amount.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        // --- HTML-Based Bar Chart: Monthly Expenses Distribution ---
+        const expensesBarChartContainer = document.getElementById("expensesBarChart");
+
+        const maxMonthlyExpense = Math.max(...monthlyValues);
+
+        monthlyLabels.forEach((month, idx) => {
+            const value = monthlyValues[idx];
+            const percent = (value / maxMonthlyExpense) * 100;
+
+            const barItem = document.createElement('div');
+            barItem.className = 'bar-item flex items-center justify-between gap-4';
+
+            barItem.innerHTML = `
+                <div class="bar-label w-1/4 text-sm font-medium">${month}</div>
+                <div class="bar-container w-full bg-gray-200 rounded h-6 overflow-hidden relative">
+                    <div class="bar bg-green-500 h-full" style="width: ${percent.toFixed(1)}%;"></div>
+                </div>
+                <div class="bar-value w-24 text-right text-sm font-semibold">${formatCurrency(value)}</div>
+            `;
+
+            expensesBarChartContainer.appendChild(barItem);
+        });
+
+        // --- HTML-Based Bar Chart: Predicted Expenses Per Category ---
+        const categoryBarChartContainer = document.getElementById("categoryBarChart");
+
+        // Get the months that are currently filtered (e.g., May, June, July 2025)
+        const activeMonths = forecastData.monthly_forecast.map(m => m.month);
+
+        // --- Sort Categories by Filtered Predicted Expense ---
+        const categories = Object.keys(forecastData.category_forecast);
+
+        const categoryTotals = categories.map(cat => {
+            const filteredItems = forecastData.category_forecast[cat].filter(item =>
+                activeMonths.includes(item.month)
+            );
+
+            return {
+                name: cat,
+                total: filteredItems.reduce((sum, item) => sum + item.predicted_expense, 0)
+            };
+        });
+
+        // Sort descending
+        categoryTotals.sort((a, b) => b.total - a.total);
+
+        const maxCategoryExpense = categoryTotals[0]?.total || 1;
+
+        // --- Render HTML-Based Bar Chart ---
+        categoryBarChartContainer.innerHTML = ""; // Clear previous bars
+
+        categoryTotals.forEach(({ name, total }) => {
+            const percent = (total / maxCategoryExpense) * 100;
+
+            const barItem = document.createElement('div');
+            barItem.className = 'bar-item flex items-center justify-between gap-4';
+
+            barItem.innerHTML = `
+                <div class="bar-label w-1/4 text-sm font-medium">${name}</div>
+                <div class="bar-container w-full bg-gray-200 rounded h-6 overflow-hidden relative">
+                    <div class="bar bg-green-600 h-full" style="width: ${percent.toFixed(1)}%;"></div>
+                </div>
+                <div class="bar-value w-24 text-right text-sm font-semibold">${formatCurrency(total)}</div>
+            `;
+
+            categoryBarChartContainer.appendChild(barItem);
+        });
+
+
+
+    });
+</script>
+   
+        
+        
+    </div>
+</body>
+
+</html>
+{% endblock %}

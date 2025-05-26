@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% block title %}Backup and Restore{% endblock %}
+{% block content %}
+
+<style>
+    body {
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+        margin: 0;
+        display: flex;
+        background-color: #f4f4f4;
+    }
+    
+.dashboard {
+    display: flex;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.current-date {
+    font-size: 14px;
+    color: #666;
+    margin-left: auto;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #223170; 
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-decoration: none; 
+}
+
+.action-button:hover {
+    background-color: #1f2644; 
+}
+
+.action-button i {
+    font-size: 18px;
+}
+
+.backups-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.backups-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.backups-table th, .backups-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.backups-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #555;
+}
+
+.backups-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+
+       .card {
+           background-color: white;
+           border-radius: 15px;
+           padding: 20px;
+           width: calc(50% - 15px);
+           min-width: 300px;
+           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+           display: flex;
+           flex-direction: column;
+           transition: transform 0.2s, box-shadow 0.2s;
+       }
+
+
+       .card:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+       }
+
+              .card-title {
+           font-size: 1.4rem;
+           font-weight: bold;
+           margin-bottom: 15px;
+       }
+
+
+       .card-content {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           flex-grow: 1;
+       }
+
+.card h3 {
+    margin-top: 0;
+}
+
+.inline-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.alert.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert.warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.alert.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.download-btn {
+    background-color: grey;
+    color: white;
+}
+
+.download-btn:hover {
+    background-color: #1f2644;
+}
+
+.delete-btn {
+    background-color: #8B1A1A;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+   .data-row {
+       display: grid;
+       grid-template-columns: repeat(4, 1fr);
+       gap: 20px;
+       margin-bottom: 20px;
+   }
+
+   .form-input, .form-select {
+       width: 100%;
+       padding: 10px;
+       border: 1px solid #ddd;
+       border-radius: 5px;
+       font-size: 1rem;
+   }
+</style>
+
+<body>
+    <div class="dashboard">
+        <div class="main-content">
+            <div class="header">
+                <h1>Backup and Restore</h1>
+                <div>Current Date: <strong id="current-date"></strong></div>
+            </div>
+
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert {{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="action-buttons">
+
+                <div class="card">
+                    <h3 class="card-title">Backup System Data</h3>
+                    <div class card-content>
+
+                    <form action="{% url 'create_backup' %}" method="post" class="inline-form">
+                        {% csrf_token %}
+                        <label for="notes">Add notes on your backup here:</label>
+                        <input class="form-input" text="text" name="notes" id="notes" placeholder="Optional notes..." />
+                        <button type="submit" class="action-button backup-btn">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Create Backup</span>
+                        </button>
+                    </form>
+                    </div>
+                </div>
+            
+                <div class="card">
+                    <h3 class="card-title">Restore System Data</h3>
+                    <div class card-content>
+                    <form action="{% url 'restore' %}" method="post" enctype="multipart/form-data" class="inline-form" onsubmit="return confirm('Are you sure you want to restore this backup?');">
+                        {% csrf_token %}
+                        <label for="selected_backup">Choose a backup:</label>
+                            <select class="form-input" name="selected_backup" required>
+                                <option value="">-- Select a backup file --</option>
+                                {% for backup in backups %}
+                                <option value="{{ backup.filename }}">{{ backup.filename }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="action-button restore-btn">
+                                <i class="fas fa-history"></i> Restore Backup
+                            </button>
+                    </form>
+                        </div>
+
+                </div>
+            
+            </div>
+
+            <div class="backups-container">
+                <h2 class="section-title">Current Backups</h2>
+                <div class="table-container">
+                    <table class="backups-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Filename</th>
+                                <th>Timestamp</th>
+                                <th>Created By</th>
+                                <th>Notes</th>
+                                <th>Download</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for backup in backups %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ backup.filename }}</td>
+                                    <td>{{ backup.metadata.timestamp|date:"Y-m-d H:i:s" }}</td>
+                                    <td>{{ backup.metadata.created_by }}</td>
+                                    <td>{{ backup.metadata.notes }}</td>
+                                    <td>
+                                        <a href="{% url 'download_backup' backup.filename %}" class="btn download-btn">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                        
+                                        <form method="post" action="{% url 'delete_backup' %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this backup?');">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="filename" value="{{ backup.filename }}">
+                                            <button type="submit" class="btn delete-btn">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6">No backups found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("current-date").textContent = new Date().toLocaleDateString();
+    </script>
+</body>
+
+</html>
+
+{% endblock %}

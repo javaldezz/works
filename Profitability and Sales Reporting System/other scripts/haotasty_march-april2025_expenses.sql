@@ -1,0 +1,18 @@
+INSERT INTO expense_t (expense_cat, expense_date, expense_amount, expense_name, expense_timestamp) VALUES
+(1, '2025-03-01', 6150.00, 'Commissary Delivery', NOW()),
+(3, '2025-03-03', 5600.00, 'Salary Payment - Employee A', NOW()),
+(1, '2025-03-08', 6450.00, 'Commissary Delivery', NOW()),
+(3, '2025-03-10', 5900.00, 'Salary Payment - Employee B', NOW()),
+(1, '2025-03-15', 5850.00, 'Commissary Delivery', NOW()),
+(3, '2025-03-17', 4500.00, 'Salary Payment - Employee C', NOW()),
+(1, '2025-03-22', 6550.00, 'Commissary Delivery', NOW()),
+(3, '2025-03-24', 5800.00, 'Salary Payment - Employee A', NOW()),
+(1, '2025-03-29', 6050.00, 'Commissary Delivery', NOW()),
+(1, '2025-04-05', 6250.00, 'Commissary Delivery', NOW()),
+(3, '2025-04-07', 5400.00, 'Salary Payment - Employee B', NOW()),
+(1, '2025-04-12', 6650.00, 'Commissary Delivery', NOW()),
+(3, '2025-04-14', 5700.00, 'Salary Payment - Employee C', NOW()),
+(1, '2025-04-19', 5900.00, 'Commissary Delivery', NOW()),
+(3, '2025-04-21', 4900.00, 'Salary Payment - Employee A', NOW()),
+(1, '2025-04-26', 6100.00, 'Commissary Delivery', NOW()),
+(3, '2025-04-28', 5300.00, 'Salary Payment - Employee B', NOW());

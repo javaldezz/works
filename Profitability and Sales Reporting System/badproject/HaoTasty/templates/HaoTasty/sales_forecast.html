@@ -1,0 +1,654 @@
+{% extends "base.html" %}
+{% block title %}Sales Forecast{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Sales Forecast</title>
+   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+   <style>
+       * {
+           box-sizing: border-box;
+           font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+       }
+
+       .main-content {
+           background-color: #f0f0f0;
+           min-height: 100vh;
+           padding: 20px 30px;
+       }
+
+       .header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 20px;
+       }
+
+       .page-title {
+           font-size: 2.5rem;
+           font-weight: bold;
+           color: #222;
+       }
+
+       .header-right {
+           display: flex;
+           align-items: center;
+           gap: 15px;
+       }
+
+       .date-display {
+           display: flex;
+           align-items: center;
+           background-color: white;
+           padding: 10px 20px;
+           border-radius: 50px;
+           font-size: 0.9rem;
+       }
+
+       .date-label {
+           font-weight: 600;
+           margin-right: 8px;
+       }
+
+       .user-info {
+           display: flex;
+           align-items: center;
+           gap: 10px;
+           background-color: white;
+           padding: 10px 20px;
+           border-radius: 50px;
+       }
+
+       .user-avatar {
+           width: 24px;
+           height: 24px;
+           border-radius: 50%;
+           background-color: #eee;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+       }
+
+       .user-role {
+           font-weight: 600;
+           font-size: 0.9rem;
+       }
+
+       .filter-controls {
+            display: flex;
+            justify-content: left; 
+            gap: 10px; 
+            margin-bottom: 30px;
+        }
+
+       .time-filters {
+           display: flex;
+           background-color: white;
+           border-radius: 50px;
+           overflow: hidden;
+       }
+
+       .time-filter {
+           padding: 12px 20px;
+           background-color: transparent;
+           border: none;
+           font-size: 0.9rem;
+           cursor: pointer;
+           transition: background-color 0.2s;
+       }
+
+       .time-filter.active {
+           background-color: #dfdfdf;
+           font-weight: 600;
+       }
+
+       .right-filters {
+           display: flex;
+           gap: 15px;
+       }
+
+       .items-filter {
+           display: flex;
+           align-items: center;
+           background-color: #dfdfdf;
+           padding: 0 20px;
+           border-radius: 50px;
+       }
+
+       .filter-label {
+           font-size: 0.9rem;
+           font-weight: 600;
+           margin-right: 8px;
+       }
+
+       .filter-select {
+           padding: 12px 0;
+           border: none;
+           background-color: transparent;
+           min-width: 80px;
+           appearance: none;
+           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+           background-repeat: no-repeat;
+           background-position: calc(100% - 0px) center;
+           padding-right: 20px;
+       }
+
+   .view-btn {
+        background-color: #223170;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .view-btn:hover {
+        background-color:  #1f2644;
+    }
+
+       .content-grid {
+           display: grid;
+           grid-template-columns: repeat(3, 1fr);
+           gap: 20px;
+           margin-bottom: 20px;
+       }
+
+       .summary-card {
+           background-color: white;
+           border-radius: 10px;
+           padding: 20px;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+           align-items: center;
+       }
+
+       .summary-title {
+           font-size: 1.1rem;
+           color: #666;
+           margin-bottom: 15px;
+       }
+
+       .summary-value {
+           font-size: 2rem;
+           font-weight: bold;
+           color: #333;
+           text-align: center;
+       }
+
+       .chart-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: inline-block; /* allows it to grow with content */
+    width: auto;            /* not constrained to a fixed width */
+    max-width: 100%;        /* optional: prevents overflow */
+}
+       
+       .chart-title {
+           font-size: 1.1rem;
+           font-weight: bold;
+           color: #333;
+           margin-bottom: 15px;
+       }
+
+       .pie-chart {
+           width: 100%;
+           height: 220px;
+           background-repeat: no-repeat;
+           background-position: center;
+           background-size: contain;
+       }
+
+       .bar-chart {
+           display: flex;
+           flex-direction: column;
+           gap: 15px;
+           justify-content: space-between;
+       }
+
+       .bar-item {
+           display: flex;
+           align-items: center;
+           gap: 10px;
+       }
+
+       .bar-label {
+           width: 150px;
+           font-size: 0.8rem;
+           text-align: right;
+       }
+
+       .bar-container {
+           flex: 1;
+           height: 20px;
+           background-color: #f5f5f5;
+           border-radius: 4px;
+           overflow: hidden;
+       }
+
+       .bar {
+           height: 100%;
+           background-color: #4CAF50;
+           border-radius: 4px;
+       }
+
+       .bar-value {
+           width: 50px;
+           font-size: 0.8rem;
+           color: #666;
+       }
+
+       .table-card {
+           background-color: white;
+           border-radius: 10px;
+           overflow: hidden;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+           grid-column: span 2;
+       }
+
+       .table-title {
+           font-size: 1.1rem;
+           font-weight: bold;
+           padding: 20px;
+           color: #333;
+           background-color: #f9f9f9;
+       }
+
+       table {
+           width: 100%;
+           border-collapse: collapse;
+       }
+
+       th, td {
+           padding: 12px 20px;
+           text-align: left;
+           border-bottom: 1px solid #eee;
+       }
+
+       th {
+           font-weight: 600;
+           color: #555;
+           font-size: 0.9rem;
+           background-color: #f5f5f5;
+       }
+
+       tr:last-child td {
+           border-bottom: none;
+       }
+
+       tr:hover {
+           background-color: #f9f9f9;
+       }
+
+       .line-chart-card {
+           background-color: white;
+           border-radius: 10px;
+           padding: 20px;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+           grid-column: span 3;
+           grid-row:span 5;
+       }
+
+       .chart-header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 15px;
+       }
+
+       .percentage-badge {
+           background-color: #ffe0e0;
+           padding: 5px 10px;
+           border-radius: 20px;
+           font-size: 0.8rem;
+           font-weight: 600;
+           color: #d32f2f;
+           display: flex;
+           align-items: center;
+           gap: 5px;
+       }
+
+       .percentage-badge svg {
+           width: 12px;
+           height: 12px;
+       }
+
+       .line-chart {
+           height: 200px;
+           background-repeat: no-repeat;
+           background-position: center;
+           background-size: contain;
+       }
+
+
+.messages {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.alert {
+  padding: 15px 25px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  background-color: #fdecea;
+  color: #b00020;
+  border-color: #f5c2c7;
+}
+
+.alert-warning {
+  background-color: #fff4e5;
+  color: #8a6d3b;
+  border-color: #ffeeba;
+}
+
+.alert-success {
+  background-color: #edf7ed;
+  color: #2e7d32;
+  border-color: #c3e6cb;
+}
+       @media (max-width: 992px) {
+           .content-grid {
+               grid-template-columns: 1fr 1fr;
+           }
+
+
+           .line-chart-card {
+               grid-column: span 2;
+           }
+       }
+
+       @media (max-width: 768px) {
+           .header {
+               flex-direction: column;
+               align-items: flex-start;
+               gap: 15px;
+           }
+
+           .header-right {
+               width: 100%;
+               justify-content: space-between;
+           }
+
+           .filter-controls {
+               flex-direction: column;
+               gap: 15px;
+           }
+
+           .time-filters, .right-filters {
+               width: 100%;
+           }
+
+           .content-grid {
+               grid-template-columns: 1fr;
+           }
+
+           .table-card, .line-chart-card {
+               grid-column: span 1;
+           }
+       }
+   </style>
+</head>
+<body>
+   <div class="main-content">
+       <div class="header">
+           <h1 class="page-title">Sales Forecast</h1>
+           <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+            Operating Days: {{ operating_days }}
+          </div>
+          <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+            Sales Transactions: {{ unique_sales_count }}
+          </div>
+          <div class="flex gap-2 flex-wrap" style="visibility: hidden;">
+            <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+              Empty Placeholder Dont Delete
+            </div>
+        </div>
+           <div class="header-right">
+                <form method="GET" action="{% url 'sales_forecast' %}">{% csrf_token %}
+
+                <!-- Active User Info -->
+               <div class="user-info">
+                   <div class="user-avatar">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                           <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                       </svg>
+                   </div>
+                   <span class="user-role">Administrator</span>
+               </div>
+           </div>
+       </div>
+
+
+       <div class="filter-controls"> 
+        <input type="hidden" name="filter" id="filterInput" value="next_month">
+            <!-- Date Picker 
+            <div class="date-display filter-label">
+                <span class="date-label">Date:</span>
+                <input type="date" id="datePicker" name="datePicker" value="{{ date_selected }}">
+            </div>
+        -->
+    
+        <div class="time-filters" id="filter">
+            <button type="submit" class="time-filter" data-filter="next_month">Next Month</button>
+            <button type="submit" class="time-filter" data-filter="next_3_months">Next 3 Months</button>
+            <button type="submit" class="time-filter" data-filter="next_6_months">Next 6 Months</button>
+            <button type="submit" class="time-filter" data-filter="next_12_months">Next 12 Months</button>
+        </div>
+                                    
+        <!-- View Forecast Button
+            <button type="submit" id="viewForecastBtn" class="view-btn">View Forecast</button> -->
+    </div>
+        </form>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="content-grid">
+            <!-- Forecast Summary Card -->
+            <div class="summary-card">
+                <div class="summary-title">Total Forecasted Revenue</div>
+                <div class="summary-value">₱{{ filtered_forecasted_revenue|default:0.00 }}</div>
+            </div>
+        
+            <!-- Revenue Distribution (Dynamic Bar Chart) -->
+            <div class="chart-card mt-6">
+                <div class="chart-title text-xl font-semibold mb-4">Revenue Distribution</div>
+                <div id="revenueBarChart" class="bar-chart space-y-3"></div>
+            </div>
+        
+            <div class="chart-card mt-6">
+                <div class="chart-title text-xl font-semibold mb-4">Predicted Orders Per Item</div>
+                <div class="bar-chart" id="ordersBarChart"></div>
+            </div>
+            
+            <!-- Annual Revenue Forecast (Line Chart) -->
+            <div class="line-chart-card mt-6">
+                <div id="forecastChart" style="width: 100%; margin: auto; height: 400px;"></div>
+            </div>
+        </div>        
+            
+        <script>
+document.addEventListener("DOMContentLoaded", function () {
+    // --- Element References ---
+    const buttons = document.querySelectorAll(".time-filter");
+    const filterInput = document.getElementById("filterInput");
+    const menuDropdown = document.getElementById("menuItemDropdown");
+    const itemForecastDropdown = document.getElementById("itemForecastDropdown");
+    const reportForm = document.getElementById("reportForm");
+    const form = document.getElementById("filterForm");
+    const revenueChartContainer = document.getElementById("revenueBarChart");
+    const ordersChartContainer = document.getElementById("ordersBarChart");
+
+    // --- Load & Apply Saved Time Filter ---
+    let savedFilter = localStorage.getItem("selectedTimeFilter") ||
+                      new URLSearchParams(window.location.search).get("filter") ||
+                      "next_month";
+
+    buttons.forEach(button => {
+        const filter = button.getAttribute("data-filter");
+        if (filter === savedFilter) {
+            button.classList.add("active");
+            filterInput.value = savedFilter;
+        }
+
+        button.addEventListener("click", function () {
+            buttons.forEach(btn => btn.classList.remove("active"));
+            this.classList.add("active");
+
+            const selected = this.getAttribute("data-filter");
+            filterInput.value = selected;
+            localStorage.setItem("selectedTimeFilter", selected);
+        });
+    });
+
+    // --- Load & Save Dropdown Selection ---
+    if (menuDropdown) {
+        const savedMenuItem = localStorage.getItem("selectedMenuItem");
+        menuDropdown.value = savedMenuItem || menuDropdown.options[0].value;
+
+        menuDropdown.addEventListener("change", () => {
+            localStorage.setItem("selectedMenuItem", menuDropdown.value);
+        });
+    }
+
+    // --- Form Submit Behavior ---
+    if (reportForm) {
+        reportForm.addEventListener("submit", () => {
+            localStorage.setItem("selectedMenuItem", menuDropdown.value);
+        });
+    }
+
+    if (form) {
+        form.addEventListener("submit", () => {
+            const active = document.querySelector(".time-filter.active");
+            if (active) {
+                filterInput.value = active.getAttribute("data-filter");
+            }
+        });
+    }
+
+    // --- Forecast Data ---
+    const itemForecast = {{ forecast.item_forecast|safe }};
+    const itemPrices = {{ menu_item_prices|safe }};
+    const revenueForecastData = {{ forecast.monthly_forecast|safe }};
+
+    // --- Render Revenue per Item (Bar Chart) ---
+    const totalRevenuePerItem = {};
+    for (const item in itemForecast) {
+        const price = itemPrices[item] || 0;
+        const totalRevenue = itemForecast[item].reduce(
+            (sum, entry) => sum + (entry.predicted_orders * price), 0
+        );
+        totalRevenuePerItem[item] = totalRevenue;
+    }
+
+    const sortedRevenueItems = Object.entries(totalRevenuePerItem).sort((a, b) => b[1] - a[1]);
+    const maxRevenue = sortedRevenueItems[0]?.[1] || 1;
+
+    const formatCurrency = amount => amount.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'PHP',
+        minimumFractionDigits: 0
+    });
+
+    sortedRevenueItems.forEach(([item, revenue]) => {
+        const barPercent = (revenue / maxRevenue) * 100;
+        const bar = document.createElement("div");
+        bar.className = "bar-item flex items-center justify-between gap-4";
+        bar.innerHTML = `
+            <div class="bar-label w-1/4 text-sm font-medium">${item}</div>
+            <div class="bar-container w-full bg-gray-200 rounded h-6 overflow-hidden relative">
+                <div class="bar bg-blue-500 h-full" style="width: ${barPercent.toFixed(1)}%;"></div>
+            </div>
+            <div class="bar-value w-24 text-right text-sm font-semibold">${formatCurrency(revenue)}</div>
+        `;
+        revenueChartContainer.appendChild(bar);
+    });
+
+    // --- Render Orders per Item (Bar Chart) ---
+    const totalOrdersPerItem = {};
+    for (const item in itemForecast) {
+        const totalOrders = itemForecast[item].reduce((sum, entry) => sum + entry.predicted_orders, 0);
+        totalOrdersPerItem[item] = totalOrders;
+    }
+
+    const sortedOrdersItems = Object.entries(totalOrdersPerItem).sort((a, b) => b[1] - a[1]);
+    const maxOrders = sortedOrdersItems[0]?.[1] || 1;
+
+    const formatNumber = number => number.toLocaleString();
+
+    sortedOrdersItems.forEach(([item, orders]) => {
+        const barPercent = (orders / maxOrders) * 100;
+        const bar = document.createElement("div");
+        bar.className = "bar-item flex items-center justify-between gap-4";
+        bar.innerHTML = `
+            <div class="bar-label w-1/4 text-sm font-medium">${item}</div>
+            <div class="bar-container w-full bg-gray-200 rounded h-6 overflow-hidden relative">
+                <div class="bar bg-green-500 h-full" style="width: ${barPercent.toFixed(1)}%;"></div>
+            </div>
+            <div class="bar-value w-24 text-right text-sm font-semibold">${formatNumber(orders)}</div>
+        `;
+        ordersChartContainer.appendChild(bar);
+    });
+
+    // --- Render Revenue Forecast (Line Chart) ---
+    const forecastTrace = {
+        x: revenueForecastData.map(x => x.month),
+        y: revenueForecastData.map(x => x.predicted_revenue),
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Predicted Revenue",
+        line: { color: "green", shape: "spline" },
+        marker: { size: 7, color: "green" }
+    };
+
+    const forecastLayout = {
+        title: { text: "<b>Forecasted Revenue Over Time</b>" },
+        xaxis: { title: "Month", tickangle: 0 },
+        yaxis: { title: "Revenue (₱)", tickformat: ",.2f" },
+        margin: { t: 50, b: 60, l: 80, r: 10 }
+    };
+
+    Plotly.newPlot("forecastChart", [forecastTrace], forecastLayout, { responsive: true });
+
+    // --- Trigger Dropdown Change for Forecast Line ---
+    const firstItem = Object.keys(itemForecast)[0];
+    if (firstItem && itemForecastDropdown) {
+        itemForecastDropdown.value = firstItem;
+        itemForecastDropdown.dispatchEvent(new Event("change"));
+    }
+});
+</script>
+
+        
+            
+            
+           </div>
+       </div>
+   </div>
+</body>
+</html>
+{% endblock  %}

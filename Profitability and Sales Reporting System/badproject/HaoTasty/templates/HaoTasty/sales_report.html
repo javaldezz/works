@@ -1,0 +1,854 @@
+{% extends "base.html" %}
+{% block title %}Sales Report{% endblock %}
+{% block content %}
+    
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <title>Sales Report</title>
+   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+   <style>
+       * {
+           box-sizing: border-box;
+           font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+       }
+
+       .main-content {
+           background-color: #f0f0f0;
+           min-height: 100vh;
+           padding: 20px 30px;
+       }
+
+       .header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 20px;
+       }
+
+       .page-title {
+           font-size: 2.5rem;
+           font-weight: bold;
+           color: #222;
+       }
+
+       .header-right {
+           display: flex;
+           align-items: center;
+           gap: 15px;
+       }
+
+       .date-display {
+           display: flex;
+           align-items: center;
+           background-color: white;
+           padding: 10px 20px;
+           border-radius: 50px;
+           font-size: 0.9rem;
+       }
+
+       .date-label {
+           font-weight: 600;
+           margin-right: 8px;
+       }
+
+       .user-info {
+           display: flex;
+           align-items: center;
+           gap: 10px;
+           background-color: white;
+           padding: 10px 20px;
+           border-radius: 50px;
+       }
+
+       .user-avatar {
+           width: 24px;
+           height: 24px;
+           border-radius: 50%;
+           background-color: #eee;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+       }
+
+       .user-role {
+           font-weight: 600;
+           font-size: 0.9rem;
+       }
+
+       .filter-controls {
+            display: flex;
+            justify-content: left; 
+            gap: 10px; 
+            margin-bottom: 30px;
+        }
+
+       .time-filters {
+           display: flex;
+           background-color: white;
+           border-radius: 50px;
+           overflow: hidden;
+       }
+
+       .time-filter {
+           padding: 12px 20px;
+           background-color: transparent;
+           border: none;
+           font-size: 0.9rem;
+           cursor: pointer;
+           transition: background-color 0.2s;
+       }
+
+       .time-filter.active {
+           background-color: #dfdfdf;
+           font-weight: 600;
+       }
+
+       .right-filters {
+           display: flex;
+           gap: 15px;
+       }
+
+       .items-filter {
+           display: flex;
+           align-items: center;
+           background-color: #dfdfdf;
+           padding: 0 20px;
+           border-radius: 50px;
+       }
+
+       .filter-label {
+           font-size: 0.9rem;
+           font-weight: 600;
+           margin-right: 8px;
+       }
+
+       .filter-select {
+           padding: 12px 0;
+           border: none;
+           background-color: transparent;
+           min-width: 80px;
+           appearance: none;
+           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+           background-repeat: no-repeat;
+           background-position: calc(100% - 0px) center;
+           padding-right: 20px;
+       }
+
+       .view-btn {
+           background-color: #223170;
+           color: white;
+           border: none;
+           border-radius: 50px;
+           padding: 12px 20px;
+           font-weight: 600;
+           cursor: pointer;
+           transition: background-color 0.2s;
+       }
+
+       .view-btn:hover {
+           background-color: #1f2644;
+       }
+
+       .content-grid {
+           display: grid;
+           grid-template-columns: repeat(3, 1fr);
+           gap: 20px;
+           margin-bottom: 20px;
+       }
+
+       .summary-card {
+           background-color: white;
+           border-radius: 10px;
+           padding: 20px;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+       }
+
+       .summary-title {
+           font-size: 1.1rem;
+           color: #666;
+           margin-bottom: 15px;
+       }
+
+       .summary-value {
+           font-size: 2rem;
+           font-weight: bold;
+           color: #333;
+           text-align: center;
+       }
+
+       .chart-container {
+            display: flex;
+            gap: 20px; /* Space between the two cards */
+            flex: 0.45;
+        }
+
+        .chart-flex-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* Adjust spacing */
+        }
+       .chart-card {
+           background-color: white;
+           border-radius: 10px;
+           padding: 20px;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+           flex: 1;
+       }
+
+       .revenue-card {
+           background-color: white;
+           border-radius: 10px;
+           padding: 20px;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+       }
+
+       .chart-title {
+           font-size: 1.1rem;
+           font-weight: bold;
+           color: #333;
+           margin-bottom: 15px;
+       }
+
+       .fbt-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+
+       .pie-chart {
+           width: 100%;
+           height: 220px;
+           background-repeat: no-repeat;
+           background-position: center;
+           background-size: contain;
+       }
+
+       .bar-chart-revenue {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-wrap: wrap; 
+        }
+       
+        .bar-chart-orders {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-wrap: wrap; 
+        }
+
+        
+       .bar-item {
+           display: flex;
+           align-items: center;
+           gap: 10px;
+       }
+
+       .bar-label {
+           width: 150px;
+           font-size: 0.8rem;
+           text-align: right;
+       }
+
+       .bar-container {
+           flex: 1;
+           height: 20px;
+           background-color: #f5f5f5;
+           border-radius: 4px;
+           max-width: 80%; 
+            min-width: 50px; 
+           overflow: hidden;
+       }
+
+       .bar {
+           height: 100%;
+           background-color: #4CAF50;
+           border-radius: 4px;
+           max-width: 100%; 
+        transition: width 0.4s ease-in-out;
+       }
+
+       .bar-value {
+           width: 50px;
+           font-size: 0.8rem;
+           color: #666;
+       }
+
+       .fbt-chart-fbt {
+            width: 100%;
+            text-align: left;
+        }
+
+        .fbt-chart-fbt .bar-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .fbt-chart-fbt .bar {
+            display: block;
+            height: 20px;
+            background-color: green;
+            text-align: left;
+        }
+
+        .fbt-chart-fbt .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+       .table-card {
+           background-color: white;
+           border-radius: 10px;
+           overflow: hidden;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+           grid-column: span 2;
+           flex: 0.8;
+       }
+
+       .table-title {
+           font-size: 1.1rem;
+           font-weight: bold;
+           padding: 20px;
+           color: #333;
+           background-color: #f9f9f9;
+       }
+
+       table {
+           width: 100%;
+           border-collapse: collapse;
+       }
+
+       th, td {
+           padding: 12px 20px;
+           text-align: left;
+           border-bottom: 1px solid #eee;
+       }
+
+       th {
+           font-weight: 600;
+           color: #555;
+           font-size: 0.9rem;
+           background-color: #f5f5f5;
+       }
+
+       tr:last-child td {
+           border-bottom: none;
+       }
+
+       tr:hover {
+           background-color: #f9f9f9;
+       }
+
+       .line-chart-card {
+           background-color: white;
+           border-radius: 10px;
+           padding: 20px;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+       }
+
+       .chart-header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 15px;
+       }
+
+       .line-chart {
+           height: 200px;
+           background-repeat: no-repeat;
+           background-position: center;
+           background-size: contain;
+       }
+
+       @media (max-width: 992px) {
+           .content-grid {
+               grid-template-columns: 1fr 1fr;
+           }
+
+
+           .line-chart-card {
+               grid-column: span 2;
+           }
+       }
+
+       @media (max-width: 768px) {
+           .header {
+               flex-direction: column;
+               align-items: flex-start;
+               gap: 15px;
+           }
+
+           .header-right {
+               width: 100%;
+               justify-content: space-between;
+           }
+
+           .filter-controls {
+               flex-direction: column;
+               gap: 15px;
+           }
+
+           .time-filters, .right-filters {
+               width: 100%;
+           }
+
+           .content-grid {
+               grid-template-columns: 1fr;
+           }
+
+       }
+
+       .dashboard-container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .summary-cards {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
+            .summary-card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+                flex: 1;
+                text-align: center;
+            }
+
+            .summary-title {
+                color: #666;
+                font-size: 14px;
+            }
+
+            .summary-value {
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .chart-flex-container {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
+            .revenue-card {
+                flex: 0.8;
+            }
+
+            .line-chart-container {
+                margin-top: 6px;
+            }
+            .line-chart-card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+                flex: 0.5;
+            }
+
+.messages {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.alert {
+  padding: 15px 25px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  background-color: #fdecea;
+  color: #b00020;
+  border-color: #f5c2c7;
+}
+
+.alert-warning {
+  background-color: #fff4e5;
+  color: #8a6d3b;
+  border-color: #ffeeba;
+}
+
+.alert-success {
+  background-color: #edf7ed;
+  color: #2e7d32;
+  border-color: #c3e6cb;
+}
+
+
+   </style>
+</head>
+
+<div class="main-content">
+    <div class="header">
+        <h1 class="page-title">Sales Report</h1>
+        <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+            Operating Days: {{ operating_days }}
+          </div>
+          <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+            Sales Transactions: {{ unique_sales_count }}
+          </div>
+          <div class="flex gap-2 flex-wrap" style="visibility: hidden;">
+            <div class="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full font-medium">
+              Empty Placeholder Dont Delete
+            </div>
+        </div>
+        <div class="header-right">
+        
+    <form method="GET" action="{% url 'sales_report' %}">{% csrf_token %}            
+            <div class="user-info">
+                <div class="user-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                    </svg>
+                </div>
+                <span class="user-role">Administrator</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-controls"> 
+        <div class="items-filter">
+            <span class="filter-label">Types:</span>
+            <!-- Menu Item Dropdown -->
+            <select id="menuItemDropdown" name="menuItemDropdown" class="filter-select">
+                <option value="All"> All </option>
+
+                {% for type in menu_item_types %}
+                    <option value="{{ type }}">{{ type }}</option>
+
+                {% empty %}
+                <p>No menu items found.</p>
+
+                {% endfor %}
+            </select>
+        </div>
+        <!-- Date Picker -->
+        <div class="date-display filter-label">
+            <span class="date-label">Date:</span>
+            <input type="date" id="datePicker" name="datePicker" value="{{ date_selected }}">
+        </div>
+        <button type="submit" id="viewReportBtn" class="view-btn">Update Report</button>
+    </div>
+
+<div class="filter-controls">        
+        <input type="hidden" name="filter" id="filterInput" value="cumulative">
+        <div class="time-filters" id="filter">
+            <button type="submit" class="time-filter" data-filter="cumulative">Cumulative</button>
+            <button type="submit" class="time-filter" data-filter="daily">Daily</button>
+            <button type="submit" class="time-filter" data-filter="weekly">Weekly</button>
+            <button type="submit" class="time-filter" data-filter="monthly">Monthly</button>
+            <button type="submit" class="time-filter" data-filter="yearly">Yearly</button>
+        </div>
+    </div> 
+</form>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+        {% if message.tags == "error" %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if start_date and end_date %}
+<div class="messages">
+    {% if filter_type not in 'daily,weekly,monthly,yearly' %}
+    <div class="alert alert-{{ message.tags }}">From {{ earliest_date }} to {{ end_date }} </div>
+    {% elif filter_type in 'weekly' %}
+    <div class="alert alert-{{ message.tags }}">Week of {{ week_start_date }} to {{ end_date }}</div>
+    {% elif filter_type in 'daily' %}
+    <div class="alert alert-{{ message.tags }}">Day of {{ daily_date }}</div>
+    {% elif filter_type in 'monthly' %}
+    <div class="alert alert-{{ message.tags }}">Month of {{ month_date }}</div>
+    {% elif filter_type in 'yearly' %} 
+    <div class="alert alert-{{ message.tags }}">Year of {{ year_date }}</div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="dashboard-container">
+    <div class="summary-cards">
+        <div class="summary-card">
+            <div class="summary-title">
+                Total Revenue
+            </div>
+            <div class="summary-value">
+                ₱{{ overall_total_revenue|default:"0.00" }}
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-title">
+                Top-Selling Item
+            </div>
+            <div class="summary-value">
+                {{ best_selling|default:"N/A" }}
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-title">
+                Worst-Selling Item
+            </div>
+            <div class="summary-value">
+                {{ worst_selling|default:"N/A" }}
+            </div>
+        </div>
+    </div>
+
+        <!-- Chart Section (Flex Row) -->
+        <div class="chart-flex-container">
+            
+            <!-- Revenue Distribution-->   
+                <div class="revenue-card">
+                    <div class="chart-title">Revenue Distribution</div>
+                    <div class="bar-chart-revenue" id="bar-chart-revenue"> </div>
+                </div>
+            
+            <!-- Sales Distribution-->   
+                <div class="chart-container">
+                    <div class="chart-card">
+                        <div class="chart-title">Sales per Menu Item</div>
+                        <div class="bar-chart-orders"></div>
+                    </div>
+                </div>
+        </div>
+
+        <div class="chart-card">
+            <!-- FBT Distribution-->   
+            <div class="chart-container">
+                <div class="chart-title">Frequently Bought Together</div>
+                <div class="fbt-chart-fbt">
+                </div>
+            </div>
+            </div class ="chart-container">
+                <div id="revenueChart"></div>
+            </div>
+        </div>
+
+        <script>
+                const revenueData = JSON.parse('{{ revenue_by_date|escapejs }}');
+
+                const trace = {
+                    x: revenueData.map(d => d.date),
+                    y: revenueData.map(d => d.total_revenue),
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Daily Revenue',
+                    line: { color: 'green' },
+                    marker: { size: 6 }
+                };
+
+                const layout = {
+                    title: {
+                        text: 'Daily Revenue Over Time',
+                        font: {
+                            weight: 'bold'  // Makes the title bold
+                        }
+                    },
+                    xaxis: { title: 'Date' },
+                    yaxis: { title: 'Revenue (₱)' },
+                    margin: { t: 50, b: 40, l: 60, r: 10 }
+                };
+
+                Plotly.newPlot('revenueChart', [trace], layout, {responsive: true});
+
+        </script>
+
+        <script>
+            // Referrer check for first visit
+            const referrer = document.referrer;
+            const cameFromLanding = referrer.includes("/landingpage");
+            const firstVisitKey = "hasVisitedSalesReport";
+
+            if (cameFromLanding && !sessionStorage.getItem(firstVisitKey)) {
+                // Save default filter and menu item
+                localStorage.setItem("selectedTimeFilter", "cumulative");
+                const dropdown = document.getElementById("menuItemDropdown");
+                if (dropdown) {
+                    localStorage.setItem("selectedMenuItem", dropdown.options[0].value);
+                }
+                sessionStorage.setItem(firstVisitKey, "true");
+            }
+        </script>
+
+        <script>
+            window.addEventListener("DOMContentLoaded", function () {
+                const buttons = document.querySelectorAll(".time-filter");
+                const datePicker = document.getElementById("datePicker");
+                const menuItemDropdown = document.getElementById("menuItemDropdown");
+                const reportForm = document.getElementById("reportForm");
+                const filterInput = document.getElementById("filterInput");
+                const form = document.getElementById("filterForm");
+
+                // Check if first visit from landing page
+                const referrer = document.referrer;
+                const cameFromLanding = referrer.includes("/landingpage");
+                const firstVisitKey = "hasVisitedSalesReport";
+
+                if (cameFromLanding && !sessionStorage.getItem(firstVisitKey)) {
+                    // Save default inputs
+                    localStorage.setItem("selectedTimeFilter", "cumulative");
+                    if (menuItemDropdown) {
+                        localStorage.setItem("selectedMenuItem", menuItemDropdown.options[0].value);
+                        menuItemDropdown.value = menuItemDropdown.options[0].value; // ✅ VISUALLY reflect
+                    }
+                    filterInput.value = "cumulative"; // ✅ Set hidden input too
+
+                    // ✅ VISUALLY activate the cumulative button
+                    buttons.forEach(button => {
+                        button.classList.remove("active");
+                        if (button.getAttribute("data-filter") === "cumulative") {
+                            button.classList.add("active");
+                        }
+                    });
+
+                    // ✅ Optionally reset datePicker too
+                    if (datePicker) {
+                        const today = new Date().toISOString().split("T")[0];
+                        datePicker.value = today;
+                    }
+
+                    sessionStorage.setItem(firstVisitKey, "true");
+                }
+
+                // Restore time filter from storage or query
+                const savedFilter = localStorage.getItem("selectedTimeFilter") || new URLSearchParams(window.location.search).get("filter") || "cumulative";
+
+                buttons.forEach(button => {
+                    const filter = button.getAttribute("data-filter");
+                    if (filter === savedFilter) {
+                        button.classList.add("active");
+                        filterInput.value = filter;
+                    }
+
+                    button.addEventListener("click", () => {
+                        buttons.forEach(btn => btn.classList.remove("active"));
+                        button.classList.add("active");
+
+                        const selectedFilter = button.getAttribute("data-filter");
+                        filterInput.value = selectedFilter;
+                        localStorage.setItem("selectedTimeFilter", selectedFilter);
+
+                        form.submit();
+                    });
+                });
+
+                // Restore dropdown selection
+                if (menuItemDropdown) {
+                    const savedMenuItem = localStorage.getItem("selectedMenuItem") || menuItemDropdown.options[0].value;
+                    menuItemDropdown.value = savedMenuItem;
+
+                    menuItemDropdown.addEventListener("change", () => {
+                        localStorage.setItem("selectedMenuItem", menuItemDropdown.value);
+                    });
+                }
+
+                if (reportForm) {
+                    reportForm.addEventListener("submit", () => {
+                        localStorage.setItem("selectedMenuItem", menuItemDropdown.value);
+                    });
+                }
+
+                if (form) {
+                    form.addEventListener("submit", () => {
+                        const activeButton = document.querySelector(".time-filter.active");
+                        if (activeButton) {
+                            filterInput.value = activeButton.getAttribute("data-filter");
+                        }
+                    });
+                }
+                        
+                try {
+                    const bestSelling = '{{ best_selling|escapejs }}';
+                    const worstSelling = '{{ worst_selling|escapejs }}';
+                    const revenueDataRaw = `{% autoescape off %}{{ annual_revenue|safe }}{% endautoescape %}`;
+                    const salesDataRaw = `{% autoescape off %}{{ sales|safe }}{% endautoescape %}`;
+                    const fbtDataRaw = `{% autoescape off %}{{ top_fbt|safe }}{% endautoescape %}`;
+        
+                    const revenueData = JSON.parse(revenueDataRaw);
+                    const salesData = JSON.parse(salesDataRaw);
+                    const fbtData = JSON.parse(fbtDataRaw);
+        
+                    renderRevenueChart(salesData);
+                    renderOrdersChart(salesData);
+                    renderFBTChart(fbtData);
+                    renderRevenueLineChart(revenueData);
+                } catch (error) {
+                    console.error("Error parsing data:", error);
+                }
+            });
+        
+            function renderRevenueChart(salesData) {
+                const container = document.querySelector(".bar-chart-revenue");
+                container.innerHTML = "";
+                const maxBar = Math.max(...salesData.map(item => item.bar_width));
+                salesData.forEach(item => {
+                    const width = (item.bar_width / maxBar) * 100;
+                    container.innerHTML += `
+                        <div class="bar-item">
+                            <div class="bar-label">${item.menu_item_name}</div>
+                            <div class="bar-container">
+                                <div class="bar" style="width: ${width.toFixed(2)}%;"></div>
+                            </div>
+                            <div class="bar-value">₱${parseFloat(item.total_revenue).toLocaleString()}</div>
+                        </div>`;
+                });
+            }
+        
+            function renderOrdersChart(salesData) {
+                const container = document.querySelector(".bar-chart-orders");
+                container.innerHTML = "";
+                const maxOrders = Math.max(...salesData.map(item => item.total_orders));
+                salesData.forEach(item => {
+                    const width = (item.total_orders / maxOrders) * 100;
+                    container.innerHTML += `
+                        <div class="bar-item">
+                            <div class="bar-label">${item.menu_item_name}</div>
+                            <div class="bar-container">
+                                <div class="bar" style="width: ${width.toFixed(2)}%;"></div>
+                            </div>
+                            <div class="bar-value">${item.total_orders.toLocaleString()} Orders</div>
+                        </div>`;
+                });
+            }
+        
+            function renderFBTChart(fbtData) {
+                const container = document.querySelector(".fbt-chart-fbt");
+                container.innerHTML = "";
+                const maxCount = Math.max(...fbtData.map(item => item.count));
+                fbtData.forEach(item => {
+                    const width = (item.count / maxCount) * 100;
+                    container.innerHTML += `
+                        <div class="bar-item">
+                            <div class="bar-label">${item.pair}</div>
+                            <div class="bar-container">
+                                <div class="bar" style="width: ${width.toFixed(2)}%;"></div>
+                            </div>
+                            <div class="bar-value">${item.count}</div>
+                        </div>`;
+                });
+            }
+        
+        </script>
+        
+{% endblock  %}

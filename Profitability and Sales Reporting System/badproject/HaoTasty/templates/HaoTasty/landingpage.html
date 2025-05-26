@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block title %}Reports Dashboard{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>View Reports - Hao Tasty PH</title>
+   <style>
+       * {
+           box-sizing: border-box;
+           font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+       }
+
+       .main-content {
+           background-color: #f0f0f0;
+           min-height: 100vh;
+           padding: 20px 30px;
+       }
+
+       .header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 40px;
+       }
+
+
+       .page-title {
+           font-size: 2.5rem;
+           font-weight: bold;
+           color: #222;
+       }
+
+
+       .header-info {
+           display: flex;
+           gap: 20px;
+       }
+
+
+       .date-display {
+           background-color: white;
+           padding: 10px 20px;
+           border-radius: 50px;
+           display: flex;
+           align-items: center;
+       }
+
+
+       .date-label {
+           font-weight: bold;
+           margin-right: 10px;
+       }
+
+
+       .user-info {
+           background-color: white;
+           padding: 10px 20px;
+           border-radius: 50px;
+           display: flex;
+           align-items: center;
+           gap: 10px;
+       }
+
+
+       .user-avatar {
+           width: 30px;
+           height: 30px;
+           border-radius: 50%;
+           background-color: #eee;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+       }
+
+
+       .user-role {
+           font-weight: bold;
+       }
+
+
+       /* Section styles */
+       .section {
+           margin-bottom: 40px;
+       }
+
+
+       .section-title {
+           font-size: 1.8rem;
+           margin-bottom: 20px;
+           color: #333;
+       }
+
+
+       .cards-container {
+           display: flex;
+           gap: 30px;
+           flex-wrap: wrap;
+       }
+
+
+       .card {
+           background-color: white;
+           border-radius: 15px;
+           padding: 20px;
+           width: calc(50% - 15px);
+           min-width: 300px;
+           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+           display: flex;
+           flex-direction: column;
+           transition: transform 0.2s, box-shadow 0.2s;
+       }
+
+
+       .card:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+       }
+
+
+       .card-title {
+           font-size: 1.4rem;
+           font-weight: bold;
+           margin-bottom: 15px;
+       }
+
+
+       .card-content {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           flex-grow: 1;
+       }
+
+
+       .card-description {
+           color: #555;
+           font-size: 0.9rem;
+       }
+
+
+       .card-image {
+           width: 80px;
+           height: 80px;
+           object-fit: contain;
+       }
+
+
+       @media (max-width: 768px) {
+           .header {
+               flex-direction: column;
+               align-items: flex-start;
+               gap: 15px;
+           }
+
+
+           .header-info {
+               width: 100%;
+               flex-direction: column;
+           }
+
+
+           .card {
+               width: 100%;
+           }
+       }
+   </style>
+</head>
+<body>
+   <div class="main-content">
+
+
+       <div class="header">
+           <h1 class="page-title">View Reports</h1>
+           <div class="header-info">
+               <div class="date-display">
+                   <span class="date-label">Date:</span>
+                   <span class="date-value">{{date}}</span>
+               </div>
+               <div class="user-info">
+                   <div class="user-avatar">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                           <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                       </svg>
+                   </div>
+                   <span class="user-role">Administrator</span>
+               </div>
+           </div>
+       </div>
+
+
+       <div class="section">
+           <h2 class="section-title">Summary</h2>
+           <div class="cards-container">
+               <div onclick="window.location.href='sales_report'" style="cursor: pointer;" class="card">
+                   <h3 class="card-title">Sales Report</h3>
+                   <div class="card-content">
+                       <p class="card-description">Overview of Current Sales</p>
+                       <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%2366c2ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='M7 16l4-8 4 2 4-6'/%3E%3Cpath d='M8 9h12v12H8z' fill='%23e6f7ff' stroke='%2366c2ff'/%3E%3C/svg%3E" alt="Sales chart" class="card-image">
+                   </div>
+               </div>
+               <div onclick="window.location.href='expense_report'" style="cursor: pointer;" class="card">
+                   <h3 class="card-title">Expense Report</h3>
+                   <div class="card-content">
+                       <p class="card-description">Overview of Current Expenses</p>
+                       <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%2366c2ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='M7 12l3 4 4-8 5 8'/%3E%3Cpath d='M8 9h12v12H8z' fill='%23e6f7ff' stroke='%2366c2ff'/%3E%3C/svg%3E" alt="Expense chart" class="card-image">
+                   </div>
+               </div>
+           </div>
+       </div>
+
+
+       <div class="section">      
+           <h2 class="section-title">Forecast</h2>
+           <div class="cards-container">
+               <div onclick="window.location.href='sales_forecast'" style="cursor: pointer;" class="card">
+                   <h3 class="card-title">Sales Forecast</h3>
+                   <div class="card-content">
+                       <p class="card-description">View Sales Predictions</p>
+                       <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%23ffcc66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='M7 14l3-3 4 6 5-7'/%3E%3Cpath d='M8 9h12v12H8z' fill='%23fff9e6' stroke='%23ffcc66'/%3E%3C/svg%3E" alt="Sales forecast" class="card-image">
+                   </div>
+               </div>
+               <div onclick="window.location.href='expense_forecast'" style="cursor: pointer;" class="card">
+                   <h3 class="card-title">Expense Forecast</h3>
+                   <div class="card-content">
+                       <p class="card-description">View Expense Predictions</p>
+                       <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%23ffcc66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='M7 10l4 4 3-6 5 8'/%3E%3Cpath d='M8 9h12v12H8z' fill='%23fff9e6' stroke='%23ffcc66'/%3E%3C/svg%3E" alt="Expense forecast" class="card-image">
+                   </div>
+               </div>
+           </div>
+       </div>
+
+       <div class="section">
+           <h2 class="section-title">Overall Profitability</h2>
+           <div class="cards-container">
+               <div onclick="window.location.href='profitability_assessment'" style="cursor: pointer;" class="card">
+                   <h3 class="card-title">Profitability Assessment</h3>
+                   <div class="card-content">
+                       <p class="card-description">Evaluate how your business generates profit</p>
+                       <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='20' height='14' rx='2' ry='2' stroke='%23999999' fill='%23f0f0f0'/%3E%3Cline x1='2' y1='7' x2='22' y2='7'/%3E%3Cline x1='6' y1='10' x2='6' y2='14'/%3E%3Cline x1='10' y1='10' x2='10' y2='14'/%3E%3Cline x1='14' y1='10' x2='14' y2='14'/%3E%3Cline x1='18' y1='10' x2='18' y2='14'/%3E%3Cline x1='6' y1='12' x2='18' y2='12'/%3E%3C/svg%3E" alt="Calculator" class="card-image">
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</body>
+</html>
+{% endblock %}

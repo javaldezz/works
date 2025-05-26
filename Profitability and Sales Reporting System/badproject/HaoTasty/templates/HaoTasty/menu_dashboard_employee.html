@@ -1,0 +1,305 @@
+{% extends "employeebase.html" %}
+{% block title %}Customize Menu{% endblock %}
+{% block content %}
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customize Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      }
+
+
+
+
+      body {
+          background-color: #f0f0f0;
+          padding: 20px;
+      }
+
+
+
+
+      .content-wrapper {
+          padding: 20px;
+          background-color: #f0f0f0;
+          min-height: 100vh;
+      }
+
+
+
+
+      /* Header Styles */
+      .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 20px;
+      }
+
+
+
+
+      .header-left {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+
+
+
+
+      .page-title {
+          font-size: 2.5rem;
+          font-weight: bold;
+          color: #000;
+      }
+
+
+
+
+      .header-right {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 10px;
+      }
+
+
+
+
+      .user-info {
+          display: flex;
+          align-items: center;
+          background-color: white;
+          padding: 8px 16px;
+          border-radius: 50px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          cursor: pointer;
+      }
+
+
+
+
+      .user-avatar {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background-color: #f0f0f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 10px;
+      }
+
+      .user-role {
+          font-weight: bold;
+      }
+
+      .button-container {
+          display: flex;
+          gap: 20px;
+      }
+
+
+    .btn-action {
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #223170; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .btn-action:hover {
+        background-color: #1f2644; 
+    }
+
+      .menu-form-container {
+          background-color: white;
+          border-radius: 10px;
+          padding: 20px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          margin-top: 20px;
+      }
+
+
+
+
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 20px;
+          font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      }
+
+
+
+
+      th {
+          text-align: left;
+          padding: 15px 10px;
+          background-color: #f2f2f2;
+          border: 1px solid #ddd;
+          font-weight: 600;
+          color: #333;
+      }
+
+
+
+
+      td {
+          padding: 15px 10px;
+          border: 1px solid #ddd;
+      }
+
+
+
+
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+          .page-title {
+              font-size: 1.8rem;
+          }
+        
+          .page-header {
+              flex-direction: column;
+          }
+        
+          .header-right {
+              align-items: flex-start;
+              margin-top: 15px;
+          }
+        
+          .button-container {
+              flex-direction: column;
+              gap: 10px;
+          }
+        
+          table, th, td {
+              display: block;
+          }
+        
+          th {
+              position: absolute;
+              top: -9999px;
+              left: -9999px;
+          }
+        
+          td {
+              border: none;
+              position: relative;
+              padding-left: 50%;
+              text-align: left;
+              border-bottom: 1px solid #eee;
+          }
+        
+          td:before {
+              position: absolute;
+              top: 15px;
+              left: 10px;
+              width: 45%;
+              padding-right: 10px;
+              white-space: nowrap;
+              font-weight: bold;
+          }
+        
+          td:nth-of-type(1):before { content: "Menu Item"; }
+          td:nth-of-type(2):before { content: "Menu Item Price"; }
+          td:nth-of-type(3):before { content: "Item Availability Status"; }
+          td:nth-of-type(4):before { content: "Menu Item Type"; }
+      }
+  </style>
+</head>
+
+
+
+
+<body>
+  <div class="content-wrapper">
+      <div class="page-header">
+          <div class="header-left">
+              <h1 class="page-title">Menu</h1>
+          </div>
+          <div class="header-right">
+                  <div class="user-info">
+                      <div class="user-avatar">
+                          <i class="fas fa-user"></i>
+                      </div>
+                      <span class="user-role">Employee</span>
+                  </div>
+          </div>
+      </div>
+
+
+
+
+      <div class="menu-form-container">
+          <table>
+              <thead>
+                  <tr>
+                      <th>Menu Item</th>
+                      <th>Menu Item Price</th>
+                      <th>Item Availability Status</th>
+                      <th>Menu Item Type</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for item in menu_items %}
+                  {% if item.item_availability_status == 1 %}
+                  <tr>
+                      <td>{{ item.menu_item_name }}</td>
+                      <td>{{ item.menu_item_price }}</td>
+                      {% if item.item_availability_status == 1 %}
+                      <td>For Sale</td>
+                      {% elif item.item_availability_status == 0 %}
+                      <td>Discontinued</td>                              
+                      {% endif %}
+                      <td>{{ item.menu_item_type }}</td>
+                  </tr>
+                  {% endif %}
+                  {% endfor %}
+
+                  {% for item in menu_items %}
+                  {% if item.item_availability_status == 0 %}
+                  <tr>
+                      <td>{{ item.menu_item_name }}</td>
+                      <td>{{ item.menu_item_price }}</td>
+                      {% if item.item_availability_status == 1 %}
+                      <td>For Sale</td>
+                      {% elif item.item_availability_status == 0 %}
+                      <td>Discontinued</td>                              
+                      {% endif %}
+                      <td>{{ item.menu_item_type }}</td>
+                  </tr>
+                  {% endif %}
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+  </div>
+</body>
+</html>
+
+
+
+
+{% endblock %}
+

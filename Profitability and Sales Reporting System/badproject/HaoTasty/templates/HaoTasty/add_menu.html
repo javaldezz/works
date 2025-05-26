@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% block title %}Customize Menu{% endblock %}
+{% block content %}
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    }
+
+    body {
+        margin: 0;
+         background-color: #f4f4f4;
+    }
+
+    .dashboard {
+        display: flex;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        background-color: #fff;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .action-button {
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #223170; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .action-button:hover {
+        background-color: #1f2644; 
+    }
+
+    .table-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+    }
+
+    .table-container th, .table-container td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+
+    .table-container th {
+        background-color: #f8f8f8;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .table-container tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .availability-dropdown {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    .delete-btn {
+        padding: 8px 12px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+    
+    /* Input Fields */
+    .input-field {
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        background-color: #fff;
+        transition: 0.2s ease-in-out;
+    }
+
+    .input-field:focus {
+        border-color: #862b34;
+        outline: none;
+        box-shadow: 0px 0px 5px rgba(134, 43, 52, 0.3);
+    }
+
+    /* New Item Row */
+    .new-item-row {
+        background-color: #fcf3f3;
+        font-weight: bold;
+    }
+
+    /* Save Button */
+    .save-container {
+        gap: 15px;
+        margin: 20px 0;
+        text-align: right;
+    }
+
+    .save-button {
+        text-decoration: none; /* Removes underline */
+        padding: 12px 25px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #862b34; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .save-button:hover {
+        background-color: #c72d3c;
+        transform: translateY(-3px);
+    }
+
+ 
+.messages {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.alert {
+  padding: 15px 25px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  background-color: #fdecea;
+  color: #b00020;
+  border-color: #f5c2c7;
+}
+
+.alert-warning {
+  background-color: #fff4e5;
+  color: #8a6d3b;
+  border-color: #ffeeba;
+}
+
+.alert-success {
+  background-color: #edf7ed;
+  color: #2e7d32;
+  border-color: #c3e6cb;
+}
+
+      .btn-back {
+          display: inline-block;
+          background-color: #5c5c5c;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 5px;
+          text-decoration: none;
+          font-weight: bold;
+      }
+
+      .btn-back:hover {
+          background-color: #b4b4b4;
+      }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            font-size: 14px;
+        }
+
+        .save-button {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+    }
+</style>
+
+<body>
+    <div class="dashboard">
+        <div class="main-content">
+            <div class="header">
+                <h1>Customize Menu</h1>
+            </div>
+            <div class="action-buttons">
+                <a href="{% url 'add_menu' %}" class="action-button">Add New Item</a>
+                <a href="{% url 'update_menu' %}" class="action-button">Update Menu</a>
+            </div>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <form method="POST" id="menuForm">
+                {% csrf_token %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Menu Item</th>
+                                <th>Menu Item Price</th>
+                                <th>Menu Item Cost</th>
+                                <th>Item Availability Status</th>
+                                <th>Menu Item Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in menu_items %}
+                            <tr>
+                                <td>{{ item.menu_item_name }}</td>
+                                <td>{{ item.menu_item_price }}</td>
+                                <td>{{ item.menu_item_cost }}</td>
+                                <td>
+                                    <select class="availability-dropdown" disabled>
+                                        <option value="1" {% if item.item_availability_status == 1 %}selected{% endif %}>For Sale</option>
+                                        <option value="0" {% if item.item_availability_status == 0 %}selected{% endif %}>Discontinued</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="availability-dropdown" disabled>
+                                        <option value="Main" {% if item.menu_item_type == "Main" %}selected{% endif %}>Main</option>
+                                        <option value="Side" {% if item.menu_item_type  == "Side" %}selected{% endif %}>Side</option>
+                                        <option value="Addon" {% if item.menu_item_type  == "Addon" %}selected{% endif %}>Add-on</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <!-- New Item Row (Styled) -->
+                            <tr class="new-item-row">
+                                <td><input type="text" name="menu_item_name" class="availability-dropdown" placeholder="Enter name" required></td>
+                                <td><input type="number" step="0.01" name="menu_item_price" class="availability-dropdown" placeholder="Price" required></td>
+                                <td><input type="number" step="0.01" name="menu_item_cost" class="availability-dropdown" placeholder="Cost" required></td>
+                                <td>
+                                    <select name="item_availability_status" class="availability-dropdown">
+                                        <option value="1">For Sale</option>
+                                        <option value="0">Discontinued</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="menu_item_type" class="availability-dropdown">
+                                        <option value="Main">Main</option>
+                                        <option value="Side">Side</option>
+                                        <option value="Addon">Add-on</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <div class="save-container">
+                        <a href="{% url 'menu_dashboard' %}" class="btn-back">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white">
+                                <path d="M15 19l-7-7 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Back
+                        </a>
+                        &nbsp;
+                        <button type="submit" class="save-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white">
+                                <path d="M12 4v16m8-8H4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Add Item
+                        </button>
+                    </div>
+                </div>
+            </form>                           
+        </div>
+    </div>
+</body>
+
+{% endblock %}

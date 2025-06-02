@@ -1,0 +1,234 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tab Icon -->
+  <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+
+  <!-- Tab Name -->
+  <title>Venue Availability System</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Include Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+  
+    
+  <style>
+    html, body {
+        font-family: 'Work Sans', Arial, sans-serif;
+        height: 100%;
+        margin: 0; 
+    }
+
+    body {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+    }
+
+    .sidebar {
+        background-color: #001d6e;
+        color: white;
+        width: 250px; 
+        padding-top: 2rem;
+        position: fixed;
+        height: 100%; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 1rem;
+        text-align: center;
+        width: 100%;
+    }
+
+    .sidebar a:hover {
+        background-color: #003399;
+    }
+
+    .filter-banner {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 1rem;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+    }
+
+    .input-label {
+        font-weight: bold;
+    }
+
+    .filter-section {
+        margin-bottom: 2rem;
+    }
+
+    .accordion-button {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 0;
+    }
+
+    .accordion-body {
+        padding-left: 50px;
+        font-size: 1rem;
+        max-width: 550px;
+    }
+
+    .accordion-collapse {
+        padding: 10px;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        background-color: #3498db;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+
+    .content-area {
+        margin-left: 250px; 
+        flex-grow: 1; 
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="d-flex" style="height: 100vh;">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-2 sidebar">
+        <a href="{% url 'home' %}">
+          <img src="{% static 'home.webp' %}" alt="Home" style="width: 20px; height: 20px; margin-right: 8px;">
+          Home
+        </a>
+        <a href="{% url 'tool' %}">
+          <img src="{% static 'search.png' %}" alt="Tool" style="width: 20px; height: 20px; margin-right: 8px;">
+          Tool
+        </a>
+        <a href="{% url 'faqs' %}">
+          <img src="{% static 'qmark.png' %}" alt="FAQs" style="width: 20px; height: 20px; margin-right: 8px;">
+          FAQs
+        </a>
+      </div>
+      
+      <div class="col-10 content-area">
+      {% block content %}
+
+        <!-- Main Content -->
+          <h1 class="mt-4">Venue Availability System</h1>
+                
+          <!-- Filter Section -->
+          <br>
+          <form class="filter-section" method="POST" action="">
+            {% csrf_token %}
+        
+            <div class="row g-3">
+                <!-- First Row -->
+                <div class="col-md-3">
+                  <label for="id_date" class="form-label input-label">Date</label>
+                  {{ form.date }}  
+                </div>
+        
+                <div class="col-md-3">
+                  <label for="id_target_time" class="form-label input-label">Target Time Slot</label>
+                  {{ form.target_time }}
+                </div>
+              </div>
+        
+            <div class="row g-3 mt-4">
+                <!-- Second Row -->        
+                <div class="col-md-3">
+                    <label for="capacity" class="form-label input-label">Venue Capacity</label>
+                    {{ form.capacity }}
+                </div>
+        
+            <div class="row g-3 mt-4">
+                <!-- Third Row -->
+                <div class="col-md-3">
+                  <label for="sort_by" class="form-label input-label">Sort by</label>
+                  {{ form.sort_by}}
+                </div>
+
+                <div class="col-md-3">
+                  <label for="order" class="form-label input-label">Order</label>
+                  {{ form.order }}
+                </div>
+  
+        
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                </div>
+            </div>
+        </form>
+        
+        
+          <!-- Available Venues -->
+          <h3>Available Venues</h3>
+          <table class="table table-striped">
+            <thead class="table-primary">
+              <tr>
+                <th>Venue ID</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>Capacity (seats)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for venue in available_slots %}
+              <tr>
+                <td>{{ venue.venue_name}}</td>
+                <td>{{ venue.reservation_date }}</td>
+                <td>{{ venue.target_time }}</td>
+                <td>{{ venue.capacity }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        
+      {% endblock %}
+    </div>
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

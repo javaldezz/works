@@ -1,0 +1,45 @@
+{% extends 'msys30app/venueavailability.html' %}
+
+{% block content %}
+
+  <h1 class="mt-4">Welcome to the Venue Availability System</h1>
+  
+  <!-- About the Project Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      About the Project
+    </div>
+    <div class="card-body">
+      <p>
+        This project is developed for the Central Facilities Management Office (CFMO), an office within Ateneo De Manila University that oversees the maintenance, allocation, and scheduling of venues for various events.
+      </p>
+      <p>
+        This system aims to improve the venue reservation process by enhancing visibility into available venues, reducing inefficiencies, and allowing students to reserve venues more efficiently.
+      </p>
+    </div>
+  </div>
+
+  <!-- Scope and Features Section -->
+  <div class="card">
+    <div class="card-header">
+      Scope and Features
+    </div>
+    <div class="card-body">
+      <h2>Scope</h2>
+      <p>
+        This project focuses on improving the CFMO reservation portal by targeting venue availability for LS Venues managed by the CFMO. Testing will focus on Faura Hall.
+      </p>
+
+      <h2>Features</h2>
+      <ul>
+        <li>Search for rooms based on date, time, and capacity.</li>
+        <li>Display available rooms in an consolidated format.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="text-center mt-5">
+    <a href="{% url 'tool' %}" class="btn btn-primary btn-lg">Start Searching for Rooms</a>
+  </div>
+{% endblock %}
